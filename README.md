@@ -1,6 +1,8 @@
 # AgentMath
 
-M00: fondasi login dan akses untuk penilaian Matematika SD berbantuan AI.
+M00–M01: fondasi login, kelas, peserta berkode, dan paket asesmen Matematika SD berbantuan AI.
+
+M01 menambahkan soal, kunci jawaban, pedoman, skor maksimum, dan pemeriksaan kelengkapan paket. Lihat [cakupan dan penerimaan M01](docs/M01.md).
 
 ## Scope terkunci
 - Pengguna admin dan pengajar; tidak ada registrasi publik.
@@ -35,7 +37,7 @@ vendor/bin/phpunit
 php artisan view:cache
 php artisan route:list --except-vendor
 ```
-CI menguji SQLite dan MariaDB, termasuk login gagal/nonaktif, rate limit, peran, isolasi baca/tulis, dan tidak bocornya API key.
+CI menguji PHP 8.3/8.4 dengan SQLite dan MariaDB, termasuk login gagal/nonaktif, rate limit, peran, isolasi kelas/peserta/soal, validasi paket, dan tidak bocornya API key.
 `composer.lock` disimpan dari dependensi yang lulus CI; gunakan `composer install` agar versi konsisten.
 
 ## Deployment

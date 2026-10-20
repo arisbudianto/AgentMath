@@ -10,3 +10,5 @@
 /database/*.sqlite*
 /storage/*.key
 /bootstrap/cache/*.php
+/.tools/
+/docs/*-live.png

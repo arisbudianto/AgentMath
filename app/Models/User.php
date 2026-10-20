@@ -9,4 +9,5 @@ class User extends Authenticatable
     protected $hidden = ['password', 'remember_token'];
     protected function casts(): array { return ['password' => 'hashed', 'is_active' => 'boolean']; }
     public function assessments() { return $this->hasMany(Assessment::class, 'owner_id'); }
+    public function classrooms() { return $this->hasMany(Classroom::class, 'owner_id'); }
 }

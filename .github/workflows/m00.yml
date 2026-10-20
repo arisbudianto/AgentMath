@@ -1,9 +1,12 @@
-name: M00 Foundation
+name: AgentMath Modules
 on: [push, pull_request, workflow_dispatch]
 permissions:
   contents: read
 jobs:
   foundation:
+    strategy:
+      matrix:
+        php: ['8.3', '8.4']
     runs-on: ubuntu-latest
     services:
       mariadb:
@@ -19,7 +22,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.3'
+          php-version: ${{ matrix.php }}
           extensions: mbstring, xml, dom, pdo_sqlite, pdo_mysql
           tools: composer:v2
           coverage: none
