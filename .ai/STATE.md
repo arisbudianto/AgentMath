@@ -16,13 +16,14 @@ Admin does not bypass assessment ownership. No public registration or default pa
 
 ## VERIFICATION
 Local PHP runtime/dependencies unavailable. Tests NOT VERIFIED locally.
-CI and deployment status must be checked against actual commit.
-No production changes made.
+CI b91a941: PASS SQLite and MariaDB, each 11 tests / 56 assertions; syntax, views, routes PASS.
+composer.lock retrieved from successful CI artifact 12268863131. Final commit CI must still be verified.
+cPanel login page reachable; no authenticated session. No production changes made.
 
 ## OPEN
-- Retrieve composer.lock CI artifact, commit it, rerun CI.
+- Final CI for locked dependencies.
 - cPanel authenticated access, PHP, document root, HTTPS, DB schema/grants.
 - AI provider/model/budget and empirical evaluation targets not selected; not blockers for M00.
 
 ## NEXT
-Push M00, inspect CI, correct failures, persist lockfile, then production preflight if access available.
+Verify final commit CI, then production preflight after secure cPanel sign-in.

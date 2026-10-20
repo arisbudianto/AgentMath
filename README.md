@@ -36,7 +36,7 @@ php artisan view:cache
 php artisan route:list --except-vendor
 ```
 CI menguji SQLite dan MariaDB, termasuk login gagal/nonaktif, rate limit, peran, isolasi baca/tulis, dan tidak bocornya API key.
-Tidak adanya lockfile pada bootstrap harus diselesaikan menggunakan artifact `composer-lock` hasil CI sebelum deployment; commit lockfile lalu verifikasi CI kembali.
+`composer.lock` disimpan dari dependensi yang lulus CI; gunakan `composer install` agar versi konsisten.
 
 ## Deployment
 Lihat `docs/DEPLOYMENT.md`. Setiap modul: test, push GitHub, CI berhasil, deploy commit yang sama, smoke test.
