@@ -18,6 +18,7 @@ Admin does not bypass assessment ownership. No public registration or default pa
 
 ## VERIFICATION
 M03 local PHP 8.5.11: 55 tests / 437 assertions PASS; browser typed/CSV upload-preview-confirm/photo display/revision PASS after configuring writable upload_tmp_dir. Upgrade M00→M01→M02→M03 preserves prior data.
+M03 application 2d3ad3b4411df21441cc646b9f04ef090808824a: CI 39508247022 PHP 8.3/8.4 SQLite/MariaDB SUCCESS. cPanel migration batch 4 Ran, cache rebuilt, live. Production transactional text/revisions, CSV commit/replay and real private PNG/authorized streaming PASS, foreign owner 403. Fixtures rolled back and test files deleted. .env/APP_KEY unchanged. File 600/directory 700; PHP CLI upload 16M/post 32M/temp writable. Evidence docs/M03-DEPLOYMENT-2026-10-21.md.
 M02 local: 35 tests / 274 assertions PASS on PHP 8.5.11, syntax/manifest/views/routes PASS. Browser manual draft/edit/add-remove row/save/approve PASS. AI HTTP mocked; live AI API NOT tested/configured. Isolated M00→M01→M02 upgrade preserves existing account/assessment/owner_id.
 M02 application 26d2de3bfde131842e73b3dc96bffeff32460191: CI 39502874052 PHP 8.3/8.4 SQLite/MariaDB SUCCESS. cPanel migrated batch 3, caches rebuilt, live. Production transactional workflow/locking/lineage/source-staleness and HTTP ownership smoke PASS; fixtures rolled back. .env/APP_KEY unchanged. AI_ENABLED=false, key/model incomplete and unchanged. Evidence: docs/M02-DEPLOYMENT-2026-10-21.md.
 M01 local: PHP 8.5.11; 22 tests / 173 assertions PASS, manifest/syntax/views/routes PASS.
@@ -31,10 +32,10 @@ M00 cPanel deployed at 5604c2d; PHP 8.4.26, document root public, migrations/cac
 M01 application commit 1a569704dbd4873aa61294787c75f6eef3d6cebd: GitHub CI PASS on PHP 8.3/8.4, SQLite/MariaDB. Run 39496133473. Deployed to cPanel; migration batch 2 Ran, caches rebuilt, live. Transactional production runtime smoke and cross-owner denial PASS; all fixtures rolled back, original admin retained. .env/APP_KEY unchanged. See docs/M01-DEPLOYMENT-2026-10-21.md for backup and recovery.
 
 ## OPEN
-- M03 push/CI/cPanel deployment pending at implementation commit. Verify web upload limits/tmp folder and private storage on host.
+- M03 COMPLETE. Production browser multipart not repeated with credentials; browser local and production runtime storage/streaming PASS. CSV preview cleanup has on-demand and CLI paths; host cron not installed.
 - M02 COMPLETE for manual workflow and optional AI adapter. Real AI requests remain unverified until server key/model are configured; do not enable automatically.
 - M01 COMPLETE. Manual production login with admin credentials not repeated; local browser and automated CI login tests PASS.
 - AI provider/model/budget and empirical evaluation targets not selected; not blockers for M00.
 
 ## NEXT
-Finish M03 test → GitHub → CI → backup/deploy → smoke. M03A transcription only when requested; photos require teacher-confirmed transcription before future grading. Preserve .env/APP_KEY/storage. Never request credentials in chat. Admin creates teaching accounts via Akun. M02 real AI activation still requires server configuration and a separate live-service check.
+M03A transcription only when requested; photos require teacher-confirmed transcription before future grading. Preserve .env/APP_KEY/storage and answer/rubric history. Never request credentials in chat. Admin creates teaching accounts via Akun. M02 real AI activation still requires server configuration and a separate live-service check. Continue test → GitHub → CI → cPanel → smoke per module.
