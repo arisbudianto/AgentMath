@@ -1,0 +1,52 @@
+name: M00 Foundation
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  foundation:
+    runs-on: ubuntu-latest
+    services:
+      mariadb:
+        image: mariadb:11.4
+        env:
+          MARIADB_ROOT_PASSWORD: ci_only_password
+          MARIADB_DATABASE: agentmath_test
+        ports: ['3306:3306']
+        options: >-
+          --health-cmd="healthcheck.sh --connect --innodb_initialized"
+          --health-interval=10s --health-timeout=5s --health-retries=10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, xml, dom, pdo_sqlite, pdo_mysql
+          tools: composer:v2
+          coverage: none
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist
+      - name: Validate manifest and PHP syntax
+        run: |
+          composer validate --no-check-publish
+          find app bootstrap config database routes tests public -name '*.php' -not -path 'bootstrap/cache/*' -print0 | xargs -0 -n1 php -l
+      - name: Feature and ownership tests (SQLite)
+        run: vendor/bin/phpunit
+      - name: Feature and ownership tests (MariaDB)
+        env:
+          DB_CONNECTION: mysql
+          DB_HOST: 127.0.0.1
+          DB_PORT: 3306
+          DB_DATABASE: agentmath_test
+          DB_USERNAME: root
+          DB_PASSWORD: ci_only_password
+        run: vendor/bin/phpunit
+      - name: Verify views and routes
+        env:
+          APP_KEY: base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
+        run: |
+          php artisan view:cache
+          php artisan route:list --except-vendor
+      - uses: actions/upload-artifact@v4
+        with:
+          name: composer-lock
+          path: composer.lock

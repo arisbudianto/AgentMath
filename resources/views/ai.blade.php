@@ -1,0 +1,2 @@
+@extends('layout')
+@section('content')<p class="eyebrow">ADMIN</p><h1>Kesiapan layanan AI</h1><section class="card"><p>Layanan: {{ $ai['enabled'] ? 'Diaktifkan' : 'Dinonaktifkan' }}</p><p>Konfigurasi: {{ $ai['configured'] ? 'Tersedia' : 'Belum lengkap' }}</p><p>Penyedia: {{ $ai['provider'] }}</p><p>Model: {{ $ai['model'] ?: 'Belum ditetapkan' }}</p><p>Kesiapan koneksi belum diuji. Penilaian AI tersedia pada modul berikutnya.</p></section>@endsection

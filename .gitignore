@@ -1,0 +1,12 @@
+/.env
+/.env.*
+!/.env.example
+/vendor/
+/node_modules/
+/public/storage
+/public/hot
+/.phpunit.cache/
+/.phpunit.result.cache
+/database/*.sqlite*
+/storage/*.key
+/bootstrap/cache/*.php

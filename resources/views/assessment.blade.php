@@ -1,0 +1,2 @@
+@extends('layout')
+@section('content')<p class="eyebrow">ASESMEN MILIK ANDA</p><h1>{{ $assessment->title }}</h1><section class="card"><h2>Pengaturan dasar</h2><form method="POST" action="{{ route('assessments.update', $assessment) }}">@csrf @method('PATCH')<label>Judul<input name="title" maxlength="200" required value="{{ old('title', $assessment->title) }}"></label><button>Simpan perubahan</button></form><p class="muted">Pengelolaan soal dan rubrik dikembangkan pada modul berikutnya.</p></section>@endsection

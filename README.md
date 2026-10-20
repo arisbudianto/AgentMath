@@ -1,3 +1,42 @@
 # AgentMath
 
-Fondasi penilaian Matematika SD berbantuan AI. Implementasi M00 sedang disiapkan; deployment belum dilakukan.
+M00: fondasi login dan akses untuk penilaian Matematika SD berbantuan AI.
+
+## Scope terkunci
+- Pengguna admin dan pengajar; tidak ada registrasi publik.
+- Pengajar hanya dapat melihat dan mengganti judul asesmen miliknya.
+- Admin mengelola akun, tanpa akses otomatis ke asesmen.
+- Konfigurasi AI hanya melalui environment server; tidak ada panggilan AI pada M00.
+- Modul lanjutan: ketikan/CSV, kemudian JPG/PNG satu jawaban per soal, transkripsi dikonfirmasi pengajar.
+- Semua nilai akhir wajib disetujui pengajar.
+
+## Runtime
+PHP 8.3+, Composer 2, MariaDB/MySQL, ekstensi Laravel standar dan PDO MySQL.
+Laravel 13; tidak membutuhkan Node/build frontend untuk M00.
+
+## Setup lokal
+```bash
+composer install
+cp .env.example .env
+php artisan key:generate
+```
+Isi database lokal pada `.env`, lalu jalankan migration pada database kosong yang khusus untuk aplikasi ini:
+```bash
+php artisan migrate
+php artisan agentmath:create-admin
+php artisan serve
+```
+Password admin diminta secara tersembunyi. Tidak ada akun/password bawaan.
+Jangan commit `.env`, data siswa, atau API key.
+
+## Verifikasi
+```bash
+vendor/bin/phpunit
+php artisan view:cache
+php artisan route:list --except-vendor
+```
+CI menguji SQLite dan MariaDB, termasuk login gagal/nonaktif, rate limit, peran, isolasi baca/tulis, dan tidak bocornya API key.
+Tidak adanya lockfile pada bootstrap harus diselesaikan menggunakan artifact `composer-lock` hasil CI sebelum deployment; commit lockfile lalu verifikasi CI kembali.
+
+## Deployment
+Lihat `docs/DEPLOYMENT.md`. Setiap modul: test, push GitHub, CI berhasil, deploy commit yang sama, smoke test.
