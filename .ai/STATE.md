@@ -17,13 +17,15 @@ Admin does not bypass assessment ownership. No public registration or default pa
 ## VERIFICATION
 Local PHP runtime/dependencies unavailable. Tests NOT VERIFIED locally.
 CI b91a941: PASS SQLite and MariaDB, each 11 tests / 56 assertions; syntax, views, routes PASS.
-composer.lock retrieved from successful CI artifact 12268863131. Final commit CI must still be verified.
-cPanel login page reachable; no authenticated session. No production changes made.
+composer.lock retrieved from successful CI artifact 12268863131. CI c2ece03: PASS all steps including SQLite/MariaDB, views and routes.
+Run: https://github.com/arisbudianto/AgentMath/actions/runs/39433318337
+Later documentation-only commits do not invalidate this code verification.
+cPanel login attempted via secure browser auth; website returned a network error. No authenticated session verified. No production changes made.
 
 ## OPEN
-- Final CI for locked dependencies.
+- CODE/DEPENDENCIES/CI: PASS at c2ece03.
 - cPanel authenticated access, PHP, document root, HTTPS, DB schema/grants.
 - AI provider/model/budget and empirical evaluation targets not selected; not blockers for M00.
 
 ## NEXT
-Verify final commit CI, then production preflight after secure cPanel sign-in.
+Production preflight via cPanel Terminal with user assistance, or restored secure sign-in access. Do not request credentials in chat.
