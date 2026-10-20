@@ -1,6 +1,7 @@
 @extends('layout')
 @section('content')
 <a href="{{ route('assessments.index') }}">← Semua asesmen</a><p class="eyebrow">PAKET ASESMEN MILIK ANDA</p><h1>{{ $assessment->title }}</h1>
+<p><a class="button" href="{{ route('answers.index',$assessment) }}">Kelola jawaban · ketikan, CSV, foto</a></p>
 <section class="card"><h2>Kelengkapan paket</h2>
 @if($issues)<p class="badge">Draf · belum lengkap</p><ul>@foreach($issues as $issue)<li>{{ $issue }}</li>@endforeach</ul>
 @else<p class="badge ready">Paket lengkap</p><p>Kelas, peserta, soal, kunci, pedoman, dan skor maksimum sudah tersedia.</p>@endif

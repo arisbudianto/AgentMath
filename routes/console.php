@@ -1,4 +1,8 @@
 <?php
+\Illuminate\Support\Facades\Artisan::command('agentmath:purge-imports', function () {
+    $count=\App\Models\AnswerImportBatch::where('status','preview')->where('expires_at','<=',now())->update(['rows'=>null,'status'=>'expired']);
+    $this->info($count.' pratinjau kedaluwarsa dibersihkan. Jawaban tersimpan tidak berubah.');
+})->purpose('Membersihkan payload pratinjau CSV yang kedaluwarsa');
 use App\Models\User;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Validator;

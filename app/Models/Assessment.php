@@ -7,6 +7,8 @@ class Assessment extends Model
     public function owner() { return $this->belongsTo(User::class, 'owner_id'); }
     public function classroom() { return $this->belongsTo(Classroom::class); }
     public function questions() { return $this->hasMany(Question::class)->orderBy('number'); }
+    public function answers() { return $this->hasMany(Answer::class); }
+    public function answerImports() { return $this->hasMany(AnswerImportBatch::class); }
 
     /** Readiness is derived from current data, not a stale saved status. */
     public function packageIssues(): array

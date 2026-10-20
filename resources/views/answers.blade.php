@@ -1,0 +1,18 @@
+@extends('layout')
+@section('content')
+<a href="{{ route('assessments.show',$assessment) }}">← Kembali ke asesmen</a><p class="eyebrow">{{ $assessment->title }}</p><h1>Penerimaan jawaban</h1>
+<p>Satu jawaban per peserta dan soal. Koreksi dilakukan melalui revisi; penerimaan jawaban tidak memberikan nilai.</p>
+@if(!$assessment->classroom || $participants->isEmpty() || $questions->isEmpty())<p class="notice">Lengkapi kelas, peserta berkode, dan soal pada asesmen sebelum memasukkan jawaban.</p>
+@else
+<section class="card"><h2>Jawaban ketikan</h2><form method="POST" action="{{ route('answers.store',$assessment) }}">@csrf<input type="hidden" name="content_type" value="text"><input type="hidden" name="creation_key" value="{{ Illuminate\Support\Str::uuid() }}">
+@include('answer-targets',['kind'=>'ketikan'])
+<label>Jawaban peserta<textarea name="answer_text" required maxlength="20000" rows="5">{{ is_string(old('answer_text')) ? old('answer_text') : '' }}</textarea></label><p class="muted">Maksimal 20.000 karakter. Salin jawaban sebagaimana ditulis peserta; jangan masukkan identitas langsung siswa.</p><button>Simpan jawaban ketikan</button></form></section>
+<section class="card"><h2>Foto tulisan tangan</h2><p>JPG/JPEG atau PNG, maksimal 5 MiB, satu foto untuk satu jawaban pada satu soal. Maksimal 6000 piksel per sisi dan 20 megapiksel. Hindari nama/NISN pada foto.</p>
+<form method="POST" enctype="multipart/form-data" action="{{ route('answers.store',$assessment) }}">@csrf<input type="hidden" name="content_type" value="photo"><input type="hidden" name="creation_key" value="{{ Illuminate\Support\Str::uuid() }}">
+@include('answer-targets',['kind'=>'foto'])<label>Foto jawaban<input type="file" name="photo" accept="image/jpeg,image/png,.jpg,.jpeg,.png" required></label><button>Simpan foto privat</button></form><p class="muted">Foto belum ditranskripsikan atau dinilai. Pembacaan dan konfirmasi transkripsi pengajar tersedia pada M03A.</p></section>
+<section class="card"><h2>Impor jawaban CSV</h2><p>Kolom: <code>participant_code,question_number,answer_text</code>. UTF-8, pemisah koma atau titik koma, maksimal 500 jawaban dan 2 MiB. Kode peserta dan nomor soal harus sudah tersedia.</p><p><a href="{{ route('imports.template',$assessment) }}">Unduh template CSV</a></p>
+<form method="POST" enctype="multipart/form-data" action="{{ route('imports.preview',$assessment) }}">@csrf<input type="hidden" name="creation_key" value="{{ Illuminate\Support\Str::uuid() }}"><label>File CSV jawaban<input type="file" name="csv_file" accept=".csv,text/csv" required></label><button>Periksa dan pratinjau CSV</button></form><p class="muted">Belum ada jawaban yang ditambahkan sebelum Anda mengonfirmasi pratinjau. Baris duplikat atau tidak valid menahan seluruh batch.</p></section>
+@endif
+<section class="card"><h2>Jawaban tersimpan</h2>@forelse($answers as $answer)<article><h3><a href="{{ route('answers.show',[$assessment,$answer]) }}">{{ $answer->participant->code }} · Soal {{ $answer->question->number }}</a></h3><p>Revisi {{ $answer->current_version }} · {{ $answer->latestRevision?->content_type === 'photo' ? 'Foto privat · menunggu transkripsi M03A' : 'Teks · belum dinilai' }}</p></article>@empty<p>Belum ada jawaban tersimpan.</p>@endforelse {{ $answers->links() }}</section>
+<section class="card"><h2>Sepuluh impor terakhir</h2>@forelse($batches as $batch)<p><a href="{{ route('imports.show',[$assessment,$batch]) }}">Batch #{{ $batch->id }}</a> · {{ ['preview'=>'Pratinjau','committed'=>'Diimpor','cancelled'=>'Dibatalkan','expired'=>'Kedaluwarsa'][$batch->status] ?? $batch->status }} · {{ $batch->row_count }} baris</p>@empty<p>Belum ada impor CSV.</p>@endforelse</section>
+@endsection

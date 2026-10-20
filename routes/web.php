@@ -5,6 +5,9 @@ use App\Services\AiConfiguration;
 Route::pattern('question', '[0-9]+');
 Route::pattern('participant', '[0-9]+');
 Route::pattern('rubric', '[0-9]+');
+Route::pattern('answer', '[0-9]+');
+Route::pattern('revision', '[0-9]+');
+Route::pattern('batch', '[0-9]+');
 Route::redirect('/', '/dashboard');
 Route::get('/health', fn () => response()->json(['app' => 'AgentMath', 'status' => 'ok']));
 Route::middleware('guest')->group(function () {
@@ -15,6 +18,16 @@ Route::middleware(['auth', 'active'])->group(function () {
     Route::post('/logout', [AuthController::class, 'destroy'])->name('logout');
     Route::view('/dashboard', 'dashboard')->name('dashboard');
     Route::middleware('can:teach')->group(function () {
+        Route::get('/assessments/{assessment}/answers', [\App\Http\Controllers\AnswerController::class,'index'])->name('answers.index');
+        Route::post('/assessments/{assessment}/answers', [\App\Http\Controllers\AnswerController::class,'store'])->name('answers.store');
+        Route::get('/assessments/{assessment}/answers/{answer}', [\App\Http\Controllers\AnswerController::class,'show'])->name('answers.show');
+        Route::post('/assessments/{assessment}/answers/{answer}/revisions', [\App\Http\Controllers\AnswerController::class,'revise'])->name('answers.revise');
+        Route::get('/assessments/{assessment}/answers/{answer}/revisions/{revision}/photo', [\App\Http\Controllers\AnswerController::class,'photo'])->name('answers.photo');
+        Route::get('/assessments/{assessment}/answer-imports/template', [\App\Http\Controllers\AnswerImportController::class,'template'])->name('imports.template');
+        Route::post('/assessments/{assessment}/answer-imports', [\App\Http\Controllers\AnswerImportController::class,'preview'])->middleware('throttle:5,1')->name('imports.preview');
+        Route::get('/assessments/{assessment}/answer-imports/{batch}', [\App\Http\Controllers\AnswerImportController::class,'show'])->name('imports.show');
+        Route::post('/assessments/{assessment}/answer-imports/{batch}/commit', [\App\Http\Controllers\AnswerImportController::class,'commit'])->name('imports.commit');
+        Route::post('/assessments/{assessment}/answer-imports/{batch}/cancel', [\App\Http\Controllers\AnswerImportController::class,'cancel'])->name('imports.cancel');
         Route::get('/assessments/{assessment}/questions/{question}/rubrics', [\App\Http\Controllers\RubricController::class,'index'])->name('rubrics.index');
         Route::post('/assessments/{assessment}/questions/{question}/rubrics', [\App\Http\Controllers\RubricController::class,'store'])->middleware('throttle:3,1')->name('rubrics.store');
         Route::get('/assessments/{assessment}/questions/{question}/rubrics/{rubric}', [\App\Http\Controllers\RubricController::class,'show'])->name('rubrics.show');

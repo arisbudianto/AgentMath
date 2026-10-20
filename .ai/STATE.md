@@ -1,5 +1,5 @@
 # PROJECT STATE
-PROJECT: AgentMath / M00–M02
+PROJECT: AgentMath / M00–M03
 REPO: arisbudianto/AgentMath
 BRANCH: main
 TARGET: https://math.speakverse.id
@@ -11,11 +11,13 @@ TARGET: https://math.speakverse.id
 - Per modul: pengujian, GitHub, CI, cPanel, smoke.
 
 ## IMPLEMENTED
+M03: typed answers, CSV preview/confirmation with revalidation and atomic commit, private JPG/PNG, immutable answer revisions, source/participant snapshots, duplicate checks and import expiry cleanup. No AI grading/transcription. See docs/M03.md.
 M02: source-linked rules, manual drafts, optional OpenAI A1/A2 structured drafts, citation/reference/score validation, optimistic draft revision, source snapshots/hash, immutable approved versions, copy lineage and current matching approved rubric. See docs/M02.md.
 Laravel 13/PHP 8.3+; session auth, admin-created accounts, active-account guard, ownership policies, classrooms, coded participants, assessment packages, questions/keys/guidelines/max scores, derived completeness, server AI configuration readiness.
 Admin does not bypass assessment ownership. No public registration or default passwords.
 
 ## VERIFICATION
+M03 local PHP 8.5.11: 55 tests / 437 assertions PASS; browser typed/CSV upload-preview-confirm/photo display/revision PASS after configuring writable upload_tmp_dir. Upgrade M00→M01→M02→M03 preserves prior data.
 M02 local: 35 tests / 274 assertions PASS on PHP 8.5.11, syntax/manifest/views/routes PASS. Browser manual draft/edit/add-remove row/save/approve PASS. AI HTTP mocked; live AI API NOT tested/configured. Isolated M00→M01→M02 upgrade preserves existing account/assessment/owner_id.
 M02 application 26d2de3bfde131842e73b3dc96bffeff32460191: CI 39502874052 PHP 8.3/8.4 SQLite/MariaDB SUCCESS. cPanel migrated batch 3, caches rebuilt, live. Production transactional workflow/locking/lineage/source-staleness and HTTP ownership smoke PASS; fixtures rolled back. .env/APP_KEY unchanged. AI_ENABLED=false, key/model incomplete and unchanged. Evidence: docs/M02-DEPLOYMENT-2026-10-21.md.
 M01 local: PHP 8.5.11; 22 tests / 173 assertions PASS, manifest/syntax/views/routes PASS.
@@ -29,9 +31,10 @@ M00 cPanel deployed at 5604c2d; PHP 8.4.26, document root public, migrations/cac
 M01 application commit 1a569704dbd4873aa61294787c75f6eef3d6cebd: GitHub CI PASS on PHP 8.3/8.4, SQLite/MariaDB. Run 39496133473. Deployed to cPanel; migration batch 2 Ran, caches rebuilt, live. Transactional production runtime smoke and cross-owner denial PASS; all fixtures rolled back, original admin retained. .env/APP_KEY unchanged. See docs/M01-DEPLOYMENT-2026-10-21.md for backup and recovery.
 
 ## OPEN
+- M03 push/CI/cPanel deployment pending at implementation commit. Verify web upload limits/tmp folder and private storage on host.
 - M02 COMPLETE for manual workflow and optional AI adapter. Real AI requests remain unverified until server key/model are configured; do not enable automatically.
 - M01 COMPLETE. Manual production login with admin credentials not repeated; local browser and automated CI login tests PASS.
 - AI provider/model/budget and empirical evaluation targets not selected; not blockers for M00.
 
 ## NEXT
-M03 only when requested; M02 AI activation requires server configuration and a separate real-service check. Preserve .env/APP_KEY and existing data/settings. Never request credentials in chat. Admin creates teacher accounts through Akun; teaching modules require teacher role. Follow test → GitHub → CI → cPanel → smoke for each module.
+Finish M03 test → GitHub → CI → backup/deploy → smoke. M03A transcription only when requested; photos require teacher-confirmed transcription before future grading. Preserve .env/APP_KEY/storage. Never request credentials in chat. Admin creates teaching accounts via Akun. M02 real AI activation still requires server configuration and a separate live-service check.

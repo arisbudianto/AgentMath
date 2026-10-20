@@ -12,3 +12,4 @@
 /bootstrap/cache/*.php
 /.tools/
 /docs/*-live.png
+/storage/framework/testing/
