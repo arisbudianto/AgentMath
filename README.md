@@ -1,10 +1,12 @@
 # AgentMath
 
-M00–M03: login, kelas, asesmen, rubrik berversi dan penerimaan jawaban Matematika SD berbantuan AI.
+M00–M03A: login, kelas, asesmen, rubrik berversi dan penerimaan jawaban Matematika SD berbantuan AI.
 
 M01 menambahkan soal, kunci jawaban, pedoman, skor maksimum, dan pemeriksaan kelengkapan paket. Lihat [cakupan dan penerimaan M01](docs/M01.md).
 M02 menambahkan aturan berkutipan sumber, draf manual/AI, kriteria, penyuntingan, pengesahan pengajar dan versi yang dikunci. Lihat [panduan M02](docs/M02.md). AI harus dikonfigurasi pada server; alur manual tidak memerlukan API key.
-M03 menambahkan jawaban ketikan, CSV dengan pratinjau/konfirmasi, foto privat dan riwayat revisi. Lihat [panduan M03](docs/M03.md). Transkripsi foto tetap M03A; penerimaan belum memberikan nilai.
+M03 menambahkan jawaban ketikan, CSV dengan pratinjau/konfirmasi, foto privat dan riwayat revisi. Lihat [panduan M03](docs/M03.md). Penerimaan belum memberikan nilai.
+
+M03A menambahkan transkripsi foto manual/bantuan AI opsional, pemeriksaan bagian meragukan dan konfirmasi wajib pengajar dengan riwayat versi. Lihat [panduan M03A](docs/M03A.md). AI transkripsi default nonaktif.
 
 ## Scope terkunci
 - Pengguna admin dan pengajar; tidak ada registrasi publik.

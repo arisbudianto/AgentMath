@@ -30,9 +30,9 @@ class AnswerController
     public function show(Assessment $assessment, int $answer)
     {
         Gate::authorize('view',$assessment);
-        $record=$assessment->answers()->with(['participant','question','latestRevision'])->findOrFail($answer);
+        $record=$assessment->answers()->with(['participant','question','latestRevision.latestTranscription'])->findOrFail($answer);
         $record->question->setRelation('assessment',$assessment);
-        return view('answer',['assessment'=>$assessment,'answer'=>$record,'revisions'=>$record->revisions()->paginate(20),'sourceHash'=>RubricValidator::sourceHash($record->question->rubricSource())]);
+        return view('answer',['assessment'=>$assessment,'answer'=>$record,'revisions'=>$record->revisions()->with('latestTranscription')->paginate(20),'sourceHash'=>RubricValidator::sourceHash($record->question->rubricSource())]);
     }
 
     public function revise(Request $request, Assessment $assessment, int $answer, AnswerIntake $intake)

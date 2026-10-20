@@ -18,6 +18,8 @@ Route::middleware(['auth', 'active'])->group(function () {
     Route::post('/logout', [AuthController::class, 'destroy'])->name('logout');
     Route::view('/dashboard', 'dashboard')->name('dashboard');
     Route::middleware('can:teach')->group(function () {
+        Route::get('/assessments/{assessment}/answers/{answer}/revisions/{revision}/transcription', [\App\Http\Controllers\TranscriptionController::class,'show'])->name('transcriptions.show');
+        Route::post('/assessments/{assessment}/answers/{answer}/revisions/{revision}/transcription', [\App\Http\Controllers\TranscriptionController::class,'store'])->middleware('throttle:6,1')->name('transcriptions.store');
         Route::get('/assessments/{assessment}/answers', [\App\Http\Controllers\AnswerController::class,'index'])->name('answers.index');
         Route::post('/assessments/{assessment}/answers', [\App\Http\Controllers\AnswerController::class,'store'])->name('answers.store');
         Route::get('/assessments/{assessment}/answers/{answer}', [\App\Http\Controllers\AnswerController::class,'show'])->name('answers.show');

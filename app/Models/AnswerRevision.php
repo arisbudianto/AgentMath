@@ -14,4 +14,6 @@ class AnswerRevision extends Model
         static::deleting(fn()=>throw new \LogicException('Riwayat jawaban tidak dapat dihapus melalui model.'));
     }
     public function answer() { return $this->belongsTo(Answer::class); }
+    public function transcriptions() { return $this->hasMany(AnswerTranscription::class)->orderByDesc('version'); }
+    public function latestTranscription() { return $this->hasOne(AnswerTranscription::class)->ofMany('version','max'); }
 }

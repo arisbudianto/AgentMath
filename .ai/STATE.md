@@ -1,5 +1,5 @@
 # PROJECT STATE
-PROJECT: AgentMath / M00–M03
+PROJECT: AgentMath / M00–M03A
 REPO: arisbudianto/AgentMath
 BRANCH: main
 TARGET: https://math.speakverse.id
@@ -11,6 +11,7 @@ TARGET: https://math.speakverse.id
 - Per modul: pengujian, GitHub, CI, cPanel, smoke.
 
 ## IMPLEMENTED
+M03A: photo transcription manual/optional vision draft, preserved uncertainties, explicit teacher confirmation, append-only version history, stale-photo/concurrency checks, readyText gate for future grading. AI_TRANSCRIPTION_ENABLED defaults false. Local 62 tests / 538 assertions PASS, browser manual draft/confirmation with synthetic image PASS, migration upgrade preserves earlier data. GitHub/CI/deployment pending until recorded below. See docs/M03A.md.
 M03: typed answers, CSV preview/confirmation with revalidation and atomic commit, private JPG/PNG, immutable answer revisions, source/participant snapshots, duplicate checks and import expiry cleanup. No AI grading/transcription. See docs/M03.md.
 M02: source-linked rules, manual drafts, optional OpenAI A1/A2 structured drafts, citation/reference/score validation, optimistic draft revision, source snapshots/hash, immutable approved versions, copy lineage and current matching approved rubric. See docs/M02.md.
 Laravel 13/PHP 8.3+; session auth, admin-created accounts, active-account guard, ownership policies, classrooms, coded participants, assessment packages, questions/keys/guidelines/max scores, derived completeness, server AI configuration readiness.
