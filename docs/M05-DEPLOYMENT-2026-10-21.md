@@ -16,7 +16,9 @@ Deployment menahan /home/speakver/.agentmath-grading.lock selama maintenance, rs
 - Browser lokal terisolasi: login guru dan tampilan perbandingan Marker, skor, kutipan, label, checkpoint dan riwayat berhasil diperiksa menggunakan respons mock yang dinyatakan sebagai demo sintetis lokal.
 - Browser produksi: halaman antrean baru tersedia untuk guru; tidak membuat proses atau mengesahkan rubrik pengguna melalui browser.
 
-Pemeriksaan langsung Arbitrator dengan checkpoint sintetis yang sengaja berbeda serta sinkronisasi penyempurnaan teks UI masih menunggu pemulihan sesi cPanel. Jangan menyatakan kedua langkah tersebut selesai sebelum diverifikasi.
+Pemeriksaan langsung Arbitrator Dinoiki lulus dengan dua checkpoint sintetis yang sengaja berbeda per kriteria namun total sama. Arbitrator memilih marker_a secara utuh dan memberi rujukan/alasan untuk kedua kriteria. Pemakaian request tersebut 859 input / 2031 output token. Ini uji kontrak Arbitrator, bukan dua penilaian independen baru terhadap jawaban nyata.
+
+Penyempurnaan UI application commit 6b0b1593cb1412ba4e635ee88c66a655e29fc36f telah dideploy setelah [CI 39559362749](https://github.com/arisbudianto/AgentMath/actions/runs/39559362749) sukses. Login guru produksi dan halaman antrean yang menyebut penerima Dinoiki berhasil diperiksa. Pemeriksaan akhir: health HTTP 200, verifikasi TLS 0 (valid), environment checksum cocok, cache konfigurasi 600, migration batch 7, worker cron tepat satu entri, heartbeat 2026-10-21 07:07:04 UTC (14:07:04 WIB). Jumlah akhir: users 3, answers 1, rubrics 0, runs 0, jobs 0. Uji sintetis tidak meninggalkan hasil atau akun tambahan. M05 selesai; persetujuan/koreksi nilai tetap menunggu M06.
 
 ## Pemulihan
 
