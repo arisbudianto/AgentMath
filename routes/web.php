@@ -24,6 +24,8 @@ Route::middleware(['auth', 'active'])->group(function () {
     Route::post('/logout', [AuthController::class, 'destroy'])->name('logout');
     Route::view('/dashboard', 'dashboard')->name('dashboard');
     Route::middleware('can:teach')->group(function () {
+        Route::get('/assessments/{assessment}/publications',[\App\Http\Controllers\GradePublicationController::class,'index'])->name('publications.index');
+        Route::post('/assessments/{assessment}/publications/{answer}',[\App\Http\Controllers\GradePublicationController::class,'store'])->middleware('throttle:12,1')->name('publications.store');
         Route::get('/assessments/{assessment}/audit',[\App\Http\Controllers\AiAuditController::class,'index'])->name('audit.index');
         Route::get('/assessments/{assessment}/audit/export',[\App\Http\Controllers\AiAuditController::class,'export'])->middleware('throttle:6,1')->name('audit.export');
         Route::get('/assessments/{assessment}/evaluations',[\App\Http\Controllers\EvaluationController::class,'index'])->name('evaluations.index');

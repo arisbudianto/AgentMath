@@ -59,6 +59,18 @@ class GradeReviewWorkflow {
             ]);
         });
     }
+    public function approvedSnapshot(\App\Models\Answer $answer,int $id): array {
+        $review=GradeReview::where('answer_id',$answer->id)->orderByDesc('version')->first();
+        if(!$review || $review->id!==$id || $review->status!=='approved' || !$review->approved_at) $this->fail('Pilih keputusan terakhir yang telah disahkan.');
+        $run=$review->run;
+        if($run->answer_id!==$answer->id || $run->assessment_id!==$answer->assessment_id || !app(GradingOrchestrator::class)->isCurrent($run)) $this->fail('Keputusan sudah tidak berlaku untuk dasar terkini.');
+        $proposal=$this->proposal($run);
+        if($review->confidence_attempt_id!==$proposal['attempt']->id) $this->fail('Dasar keputusan tidak sesuai.');
+        $checked=$this->criteria($review->criteria,$proposal['data'],$run->input_snapshot);
+        if($checked['total_score']!==$review->total_score) $this->fail('Total keputusan tidak valid.');
+        return ['review_id'=>$review->id,'answer_revision_id'=>$run->answer_revision_id,'transcription_id'=>$run->answer_transcription_id,
+            'rubric_id'=>$run->rubric_version_id,'question_number'=>$answer->question->number,'total_score'=>$review->total_score,'max_score'=>$run->input_snapshot['source']['max_score']];
+    }
     private function criteria(array $rows,array $proposal,array $input): array {
         Validator::make(['criteria'=>$rows],[
             'criteria'=>'required|array|min:1|max:20','criteria.*'=>'array:criterion_id,score,reason',

@@ -6,7 +6,9 @@ class StudentController {
     private function participant(Request $request) { return $request->user()->studentProfile()->firstOrFail()->participant()->with('classroom')->firstOrFail(); }
     public function index(Request $request) {
         $participant=$this->participant($request);
-        return view('student',['participant'=>$participant,'answers'=>$participant->answers()->whereHas('assessment',fn($q)=>$q->where('classroom_id',$participant->classroom_id))->with('latestRevision.latestTranscription')->latest()->paginate(15)]);
+        $answers=$participant->answers()->whereHas('assessment',fn($q)=>$q->where('classroom_id',$participant->classroom_id))->with('latestRevision.latestTranscription')->latest()->paginate(15);
+        $grades=[]; foreach($answers as $answer) $grades[$answer->id]=app(\App\Services\GradePublishing::class)->visible($answer);
+        return view('student',compact('participant','answers','grades'));
     }
     public function photo(Request $request,int $answer,int $revision) {
         $participant=$this->participant($request);
