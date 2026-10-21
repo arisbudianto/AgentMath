@@ -8,6 +8,7 @@ Route::pattern('rubric', '[0-9]+');
 Route::pattern('answer', '[0-9]+');
 Route::pattern('revision', '[0-9]+');
 Route::pattern('batch', '[0-9]+');
+Route::pattern('run', '[0-9]+');
 Route::redirect('/', '/dashboard');
 Route::get('/health', fn () => response()->json(['app' => 'AgentMath', 'status' => 'ok']));
 Route::middleware('guest')->group(function () {
@@ -18,6 +19,10 @@ Route::middleware(['auth', 'active'])->group(function () {
     Route::post('/logout', [AuthController::class, 'destroy'])->name('logout');
     Route::view('/dashboard', 'dashboard')->name('dashboard');
     Route::middleware('can:teach')->group(function () {
+        Route::get('/assessments/{assessment}/grading-runs',[\App\Http\Controllers\GradingRunController::class,'index'])->name('grading.index');
+        Route::post('/assessments/{assessment}/grading-runs',[\App\Http\Controllers\GradingRunController::class,'store'])->middleware('throttle:6,1')->name('grading.store');
+        Route::get('/assessments/{assessment}/grading-runs/{run}',[\App\Http\Controllers\GradingRunController::class,'show'])->name('grading.show');
+        Route::post('/assessments/{assessment}/grading-runs/{run}/control',[\App\Http\Controllers\GradingRunController::class,'control'])->middleware('throttle:6,1')->name('grading.control');
         Route::get('/assessments/{assessment}/answers/{answer}/revisions/{revision}/transcription', [\App\Http\Controllers\TranscriptionController::class,'show'])->name('transcriptions.show');
         Route::post('/assessments/{assessment}/answers/{answer}/revisions/{revision}/transcription', [\App\Http\Controllers\TranscriptionController::class,'store'])->middleware('throttle:6,1')->name('transcriptions.store');
         Route::get('/assessments/{assessment}/answers', [\App\Http\Controllers\AnswerController::class,'index'])->name('answers.index');

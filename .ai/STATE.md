@@ -1,5 +1,5 @@
 # PROJECT STATE
-PROJECT: AgentMath / M00–M03A
+PROJECT: AgentMath / M00–M04
 REPO: arisbudianto/AgentMath
 BRANCH: main
 TARGET: https://math.speakverse.id
@@ -11,6 +11,7 @@ TARGET: https://math.speakverse.id
 - Per modul: pengujian, GitHub, CI, cPanel, smoke.
 
 ## IMPLEMENTED
+M04: durable database grading queue, pinned answer/transcription/rubric/config snapshots without API key, preflight validator, stage contract with isolated Marker contexts, attempt/event history, generation/lease protection, cancel/manual retry/expired worker recovery and bounded CLI worker. Actual grading agents remain M05: preflight stops at awaiting_agent, never creates scores. Local 72 tests / 634 assertions PASS; upgrade and browser queue/worker/cancel PASS. CI/deployment pending. See docs/M04.md.
 M03A: photo transcription manual/optional vision draft, preserved uncertainties, explicit teacher confirmation, append-only version history, stale-photo/concurrency checks, readyText gate for future grading. AI_TRANSCRIPTION_ENABLED defaults false. See docs/M03A.md.
 M03: typed answers, CSV preview/confirmation with revalidation and atomic commit, private JPG/PNG, immutable answer revisions, source/participant snapshots, duplicate checks and import expiry cleanup. No AI grading/transcription. See docs/M03.md.
 M02: source-linked rules, manual drafts, optional OpenAI A1/A2 structured drafts, citation/reference/score validation, optimistic draft revision, source snapshots/hash, immutable approved versions, copy lineage and current matching approved rubric. See docs/M02.md.

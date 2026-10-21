@@ -30,6 +30,8 @@ return [
     */
 
     'connections' => [
+        // Same default DB as run/checkpoint transactions; never fall back to sync.
+        'grading' => ['driver'=>'database','connection'=>null,'table'=>'agentmath_jobs','queue'=>'grading','retry_after'=>120,'after_commit'=>false],
 
         'sync' => [
             'driver' => 'sync',
