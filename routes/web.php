@@ -11,7 +11,7 @@ Route::pattern('batch', '[0-9]+');
 Route::pattern('run', '[0-9]+');
 foreach(['dataset','case','experiment','sample'] as $parameter) Route::pattern($parameter,'[0-9]+');
 Route::pattern('task','[0-9]+');
-Route::redirect('/', '/dashboard');
+Route::view('/', 'home')->name('home');
 Route::get('/health', fn () => response()->json(['app' => 'AgentMath', 'status' => 'ok']));
 Route::middleware('guest')->group(function () {
     Route::view('/login', 'login')->name('login');

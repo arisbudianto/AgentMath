@@ -63,3 +63,5 @@ Lihat `docs/DEPLOYMENT.md`. Setiap modul: test, push GitHub, CI berhasil, deploy
 M12: dua label manusia/adjudikasi dan kualitas transkripsi foto terpisah; lihat [panduan M12](docs/M12.md).
 
 M13: bank soal buku kelas 1, delapan bab dan sumber visual privat; lihat [panduan M13](docs/M13.md).
+
+M14: halaman depan publik ramah anak, pastel, delapan latihan mini dan login terpisah; lihat [panduan M14](docs/M14.md).
