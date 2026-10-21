@@ -32,7 +32,7 @@ class GradingOrchestrator
                 'answer_transcription_id'=>$revision->content_type==='photo'?$revision->latestTranscription->id:null,
                 'rubric_version_id'=>$rubric->id,'created_by'=>$actor,'creation_key'=>$key,
                 'input_snapshot'=>$input,'input_hash'=>$this->hash($input),
-                'config_snapshot'=>['pipeline_version'=>'m04_v1','provider'=>config('ai.provider'),'model'=>config('ai.model'),'enabled'=>(bool)config('ai.enabled'),'max_output_tokens'=>(int)config('ai.max_output_tokens',4000)],
+                'config_snapshot'=>['pipeline_version'=>'m05_v1','provider'=>config('ai.provider'),'model'=>config('ai.model'),'enabled'=>(bool)config('ai.enabled'),'max_output_tokens'=>(int)config('ai.max_output_tokens',4000)],
                 'status'=>'queued','stage'=>'preflight','generation'=>1,'queued_at'=>now(),
             ]);
             $this->event($run,'created',$actor); $this->enqueue($run); return $run;
@@ -69,7 +69,7 @@ class GradingOrchestrator
             $previous=in_array($run->stage,['marker_a','marker_b','preflight'],true)?[]:$run->attempts()->where('status','succeeded')->get()->pluck('output','stage')->all();
             $output=$this->stages->validate($run->stage,$this->stages->execute($run->stage,$run->input_snapshot,$previous,$run->config_snapshot));
             if(strlen(json_encode($output,JSON_THROW_ON_ERROR))>1000000) throw new \UnexpectedValueException();
-        } catch(\Throwable $e) { $error=$e instanceof \UnexpectedValueException?'invalid_output':'stage_failed'; }
+        } catch(\Throwable $e) { $error=match(true) { $e instanceof GradingConfigurationException=>'configuration_changed', $e instanceof \UnexpectedValueException=>'invalid_output', default=>'stage_failed' }; }
         $this->locked($id,function($current) use($generation,$attempt,$output,$error) {
             if($current->generation!==$generation || $current->status!=='running' || $current->lease_token!==$attempt->lease_token) return;
             $entry=$current->attempts()->findOrFail($attempt->id);

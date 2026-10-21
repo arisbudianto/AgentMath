@@ -9,9 +9,14 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Tests\TestCase;
 
+// Preserve M04 orchestration contract tests independently of paid M05 agents.
+class PreflightOnlyStages extends GradingStages {
+    public function supports(string $stage): bool { return $stage==='preflight'; }
+}
 class GradingOrchestrationTest extends TestCase {
     use RefreshDatabase;
     private function fixture(bool $photo=false): array {
+        $this->app->instance(GradingStages::class,new PreflightOnlyStages());
         $this->withoutMiddleware(\Illuminate\Routing\Middleware\ThrottleRequests::class); Http::preventStrayRequests();
         $u=new User(['name'=>'Teacher','email'=>uniqid().'@example.test','password'=>'Password12345']); $u->role='teacher'; $u->is_active=true; $u->save();
         $c=$u->classrooms()->create(['name'=>'Class','grade'=>4,'school_year'=>'2026']); $p=$c->participants()->create(['code'=>'P001']);
@@ -71,7 +76,7 @@ class GradingOrchestrationTest extends TestCase {
     }
     public function test_failure_retry_limit_and_completed_checkpoint_are_preserved(): void {
         [$u,$a,$answer]=$this->fixture();
-        $adapter=new class extends GradingStages { public bool $fail=true; public function execute(string $stage,array $input,array $previous,array $configuration): array { if($this->fail) throw new \RuntimeException('SECRET_PROVIDER_ERROR'); return parent::execute($stage,$input,$previous,$configuration); } };
+        $adapter=new class extends PreflightOnlyStages { public bool $fail=true; public function execute(string $stage,array $input,array $previous,array $configuration): array { if($this->fail) throw new \RuntimeException('SECRET_PROVIDER_ERROR'); return parent::execute($stage,$input,$previous,$configuration); } };
         $this->app->instance(GradingStages::class,$adapter); $workflow=app(GradingOrchestrator::class); $run=$this->start($u,$a,$answer);
         $this->step($run); $this->assertSame('failed',$run->status); $this->assertNull($run->attempts()->first()->output);
         $this->get('/assessments/'.$a->id.'/grading-runs/'.$run->id)->assertDontSee('SECRET_PROVIDER_ERROR')->assertSee('stage_failed');
@@ -86,12 +91,12 @@ class GradingOrchestrationTest extends TestCase {
     }
     public function test_validation_duplicate_delivery_and_cancellation_during_execution(): void {
         [$u,$a,$answer]=$this->fixture();
-        $adapter=new class extends GradingStages { public function execute(string $stage,array $input,array $previous,array $configuration): array { return ['validated'=>false]; } };
+        $adapter=new class extends PreflightOnlyStages { public function execute(string $stage,array $input,array $previous,array $configuration): array { return ['validated'=>false]; } };
         $this->app->instance(GradingStages::class,$adapter); $run=$this->start($u,$a,$answer); $old=$run->generation; $this->step($run);
         $this->assertSame('invalid_output',$run->attempts()->first()->error_code);
         app(GradingOrchestrator::class)->process($run->id,$old); $this->assertSame(1,$run->attempts()->count());
         app(GradingOrchestrator::class)->control($a,$u->id,$run->id,'cancel');
-        $adapter=new class extends GradingStages { public $cancel; public function execute(string $stage,array $input,array $previous,array $configuration): array { ($this->cancel)(); return parent::execute($stage,$input,$previous,$configuration); } };
+        $adapter=new class extends PreflightOnlyStages { public $cancel; public function execute(string $stage,array $input,array $previous,array $configuration): array { ($this->cancel)(); return parent::execute($stage,$input,$previous,$configuration); } };
         $this->app->instance(GradingStages::class,$adapter); $run=$this->start($u,$a,$answer);
         $adapter->cancel=fn()=>app(GradingOrchestrator::class)->control($a,$u->id,$run->id,'cancel'); $this->step($run);
         $this->assertSame('cancelled',$run->status); $this->assertSame('cancelled',$run->attempts()->first()->status); $this->assertNull($run->attempts()->first()->output);
@@ -121,7 +126,7 @@ class GradingOrchestrationTest extends TestCase {
     public function test_stage_contract_order_marker_isolation_and_saved_checkpoints(): void {
         [$u,$a,$answer]=$this->fixture();
         // Contract-only test adapter. No production marker or score implementation in M04.
-        $adapter=new class extends GradingStages {
+        $adapter=new class extends PreflightOnlyStages {
             public array $calls=[];
             public function supports(string $stage): bool { return true; }
             public function execute(string $stage,array $input,array $previous,array $configuration): array {
@@ -142,7 +147,7 @@ class GradingOrchestrationTest extends TestCase {
     }
     public function test_late_worker_result_and_changed_source_during_stage_are_discarded(): void {
         [$u,$a,$answer,$q]=$this->fixture();
-        $adapter=new class extends GradingStages { public $during; public function execute(string $stage,array $input,array $previous,array $configuration): array { ($this->during)(); return parent::execute($stage,$input,$previous,$configuration); } };
+        $adapter=new class extends PreflightOnlyStages { public $during; public function execute(string $stage,array $input,array $previous,array $configuration): array { ($this->during)(); return parent::execute($stage,$input,$previous,$configuration); } };
         $this->app->instance(GradingStages::class,$adapter); $run=$this->start($u,$a,$answer);
         $adapter->during=fn()=>$q->update(['prompt'=>'Different during execution']); $this->step($run);
         $this->assertSame('stale',$run->status); $this->assertNull($run->attempts()->first()->output);

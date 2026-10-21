@@ -16,7 +16,8 @@ class GradingRunController {
     }
     public function show(Assessment $assessment,int $run,GradingOrchestrator $workflow) {
         Gate::authorize('view',$assessment); $record=\App\Models\GradingRun::where('assessment_id',$assessment->id)->with(['answer.participant','revision','rubric','attempts'])->findOrFail($run);
-        return view('grading-run',['assessment'=>$assessment,'run'=>$record,'current'=>$workflow->isCurrent($record),'canResume'=>app(\App\Services\GradingStages::class)->supports($record->stage),'events'=>$record->events()->paginate(30),'heartbeat'=>Cache::get('grading-worker-finished')]);
+        $proposal=$record->status==='completed'?$record->attempts->where('stage','confidence')->where('status','succeeded')->last()?->output['data'] ?? null:null;
+        return view('grading-run',['assessment'=>$assessment,'run'=>$record,'proposal'=>$proposal,'current'=>$workflow->isCurrent($record),'canResume'=>app(\App\Services\GradingStages::class)->supports($record->stage),'events'=>$record->events()->paginate(30),'heartbeat'=>Cache::get('grading-worker-finished')]);
     }
     public function control(Request $request,Assessment $assessment,int $run,GradingOrchestrator $workflow) {
         Gate::authorize('update',$assessment); $data=$request->validate(['action'=>'required|in:resume,cancel']);
