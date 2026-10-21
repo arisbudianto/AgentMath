@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#fffaf3"><meta name="description" content="Temukan serunya matematika bersama AgentMath. Kenali angka, bentuk, dan cerita melalui latihan kecil untuk anak SD, dengan pendampingan guru."><title>@yield('title','AgentMath · Angka kecil, petualangan besar')</title><link rel="stylesheet" href="{{ asset('home.css') }}?v=m14"></head>
+<html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#fffaf3"><meta name="description" content="Temukan serunya matematika bersama AgentMath. Kenali angka, bentuk, dan cerita melalui latihan kecil untuk anak SD, dengan pendampingan guru."><title>@yield('title','AgentMath · Angka kecil, petualangan besar')</title><link rel="stylesheet" href="{{ asset('home.css') }}?v=m14-readable"></head>
 <body class="public-site @yield('page-class')">
 <a class="skip-link" href="#utama">Langsung ke isi</a>
 <header class="site-header"><a class="home-brand" href="{{ route('home') }}" aria-label="AgentMath, halaman depan"><span class="brand-mark" aria-hidden="true">a<span>✦</span></span><span>Agent<span class="brand-math">Math</span><small>Teman tumbuh bersama angka</small></span></a>

@@ -12,7 +12,7 @@ for asset in home.css home.js images/math-garden.svg; do
         *.js) expected=javascript ;;
         *.svg) expected=image/svg+xml ;;
     esac
-    result=$(curl --fail --silent --show-error --location --output /dev/null --write-out '%{http_code} %{content_type} %{size_download}' "${origin%/}/$asset?v=m14")
+    result=$(curl --fail --silent --show-error --location --output /dev/null --write-out '%{http_code} %{content_type} %{size_download}' "${origin%/}/$asset?v=m14-readable")
     [[ "$result" == 200\ * && "$result" == *"$expected"* && "${result##* }" -gt 0 ]]
     printf '%s %s\n' "$asset" "$result"
 done
