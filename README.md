@@ -10,6 +10,8 @@ M03A menambahkan transkripsi foto manual/bantuan AI opsional, pemeriksaan bagian
 
 M04 menambahkan antrean database, snapshot proses, checkpoint, retry terbatas, pembatalan dan worker shared hosting. Lihat [panduan M04](docs/M04.md). [M05](docs/M05.md) menjalankan dua Marker independen, arbitrase perbedaan skor per kriteria dan pemeriksaan High/Low. Hasil tetap usulan privat untuk ditinjau guru; nilai akhir/persetujuan merupakan M06.
 
+[M06](docs/M06.md) menyediakan pemeriksaan bukti, koreksi skor dengan alasan, draf dan persetujuan guru yang berversi. Nilai guru terpisah dari usulan AI; rekap/ekspor dan publikasi siswa belum tersedia.
+
 ## Scope terkunci
 - Login siswa tersedia sebagai tambahan uji coba: portal hanya data/jawaban milik peserta yang ditautkan admin; belum ada pengerjaan ujian mandiri. Lihat [akun siswa](docs/STUDENT-ACCOUNTS.md).
 - Pengguna admin dan pengajar; tidak ada registrasi publik.

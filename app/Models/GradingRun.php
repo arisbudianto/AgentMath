@@ -18,5 +18,5 @@ class GradingRun extends Model
     public function attempts() { return $this->hasMany(GradingAttempt::class)->orderBy('id'); }
     public function events() { return $this->hasMany(GradingEvent::class)->orderByDesc('id'); }
     public function label(): string { return self::labels()[$this->status] ?? $this->status; }
-    public static function labels(): array { return ['queued'=>'Dalam antrean','running'=>'Sedang diproses','awaiting_agent'=>'Menunggu agent penilaian','failed'=>'Gagal, perlu pemeriksaan','stale'=>'Dasar proses sudah berubah','cancelled'=>'Dibatalkan','completed'=>'Tahapan selesai, belum disetujui pengajar']; }
+    public static function labels(): array { return ['queued'=>'Dalam antrean','running'=>'Sedang diproses','awaiting_agent'=>'Menunggu agent penilaian','failed'=>'Gagal, perlu pemeriksaan','stale'=>'Dasar proses sudah berubah','cancelled'=>'Dibatalkan','completed'=>'Tahapan AI selesai']; }
 }

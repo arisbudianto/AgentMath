@@ -1,6 +1,6 @@
 @extends('layout')
 @section('content')
-<a href="{{ route('grading.index',$assessment) }}">← Semua proses</a><p class="eyebrow">{{ $assessment->title }} · {{ $run->answer->participant->code }}</p><h1>Proses #{{ $run->id }}</h1><p class="notice">{{ $run->label() }} · tahap {{ $run->stage }}. Belum ada nilai akhir yang disetujui.</p>
+<a href="{{ route('grading.index',$assessment) }}">← Semua proses</a><p class="eyebrow">{{ $assessment->title }} · {{ $run->answer->participant->code }}</p><h1>Proses #{{ $run->id }}</h1><p class="notice">{{ $run->label() }} · tahap {{ $run->stage }}. Nilai akhir ditetapkan melalui pemeriksaan guru.</p>
 @if(!$current)<p class="error">Versi jawaban, transkripsi, soal atau rubrik terkini sudah berbeda. Proses ini hanya menjadi riwayat; buat proses baru dari dasar terkini.</p>@endif
 <section class="card"><h2>Status dan tindakan</h2><p>Revisi jawaban {{ $run->revision->version }} · rubrik versi {{ $run->rubric->version }}@if($run->answer_transcription_id) · transkripsi #{{ $run->answer_transcription_id }}@endif</p><p>Worker terakhir selesai: {{ $heartbeat ? \Illuminate\Support\Carbon::parse($heartbeat)->timezone(config('app.display_timezone'))->format('d-m-Y H:i:s T') : 'Belum tercatat' }}. Muat ulang untuk status terbaru.</p>
 @if($run->status==='awaiting_agent')<p>Persiapan berhasil. Proses ditahan pada kontrak agent saat dibuat. Periksa versi pipeline di bawah; proses lama perlu dibatalkan dan dibuat ulang. Proses ini tidak menghasilkan nilai nol.</p>@endif
@@ -11,10 +11,11 @@
 @if(in_array($run->status,['queued','running','failed','awaiting_agent']))<form method="POST" action="{{ route('grading.control',[$assessment,$run]) }}">@csrf<input type="hidden" name="action" value="cancel"><button class="secondary">Batalkan proses</button></form>@endif
 <a href="{{ route('answers.show',[$assessment,$run->answer_id]) }}">Buka jawaban dan buat proses baru bila diperlukan</a></section>
 @if($proposal)
+<a class="button" href="{{ route('reviews.show',[$assessment,$run]) }}">Periksa dan putuskan nilai sebagai guru</a>
 <section class="card"><h2>Usulan skor AI — perlu tinjauan guru</h2>
 @if(!$current)<p class="error">Usulan historis ini tidak berlaku untuk dasar jawaban terkini.</p>@endif
 <p><strong>{{ $proposal['total_score'] }} / {{ $run->input_snapshot['source']['max_score'] }}</strong> · pilihan {{ $proposal['selected_marker'] }} · pemeriksaan {{ $proposal['effective_label'] }}</p>
-<p>High/Low adalah pemeriksaan AI, bukan probabilitas kebenaran. Belum ada nilai akhir atau publikasi ke siswa. Persetujuan dan koreksi nilai tersedia pada modul M06 berikutnya.</p>
+<p>High/Low adalah pemeriksaan AI, bukan probabilitas kebenaran. Usulan ini terpisah dari keputusan guru. Buka pemeriksaan guru untuk koreksi dan persetujuan; publikasi ke siswa belum tersedia.</p>
 <p>{{ $proposal['confidence']['reason'] }}</p>
 @foreach($proposal['confidence']['concerns'] as $concern)<p>{{ $concern['criterion_id'] }}: {{ $concern['reason'] }}</p>@endforeach
 @foreach($proposal['review_flags'] as $flag)<p class="notice">Perlu pemeriksaan: {{ ['marker_disagreement'=>'Skor Marker berbeda per kriteria; periksa keputusan arbitrase.','missing_evidence'=>'Ada bukti yang tidak ditemukan; label efektif ditahan Low.','ai_low_confidence'=>'AI menandai keraguan.'][$flag] ?? $flag }}</p>@endforeach

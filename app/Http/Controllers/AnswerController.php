@@ -32,7 +32,11 @@ class AnswerController
         Gate::authorize('view',$assessment);
         $record=$assessment->answers()->with(['participant','question','latestRevision.latestTranscription'])->findOrFail($answer);
         $record->question->setRelation('assessment',$assessment);
-        return view('answer',['assessment'=>$assessment,'answer'=>$record,'revisions'=>$record->revisions()->with('latestTranscription')->paginate(20),'sourceHash'=>RubricValidator::sourceHash($record->question->rubricSource())]);
+        $approved=\App\Models\GradeReview::where('answer_id',$record->id)->where('status','approved')->orderByDesc('version')->first();
+        return view('answer',['assessment'=>$assessment,'answer'=>$record,'approved'=>$approved,
+            'approvedCurrent'=>$approved?app(\App\Services\GradingOrchestrator::class)->isCurrent($approved->run):false,
+            'completedRuns'=>\App\Models\GradingRun::where('answer_id',$record->id)->where('status','completed')->latest()->limit(10)->get(),
+            'revisions'=>$record->revisions()->with('latestTranscription')->paginate(20),'sourceHash'=>RubricValidator::sourceHash($record->question->rubricSource())]);
     }
 
     public function revise(Request $request, Assessment $assessment, int $answer, AnswerIntake $intake)
