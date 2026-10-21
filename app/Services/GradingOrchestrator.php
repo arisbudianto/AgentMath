@@ -67,7 +67,8 @@ class GradingOrchestrator
         try {
             // Marker A/B never receive the other marker's output. M05 owns scoring/arbitration validators.
             $previous=in_array($run->stage,['marker_a','marker_b','preflight'],true)?[]:$run->attempts()->where('status','succeeded')->get()->pluck('output','stage')->all();
-            $output=$this->stages->validate($run->stage,$this->stages->execute($run->stage,$run->input_snapshot,$previous,$run->config_snapshot));
+            $output=app(AiAudit::class)->within($run->assessment,'grading',$attempt->id,$attempt->lease_token,fn()=>
+                $this->stages->validate($run->stage,$this->stages->execute($run->stage,$run->input_snapshot,$previous,$run->config_snapshot)));
             if(strlen(json_encode($output,JSON_THROW_ON_ERROR))>1000000) throw new \UnexpectedValueException();
         } catch(\Throwable $e) { $error=match(true) { $e instanceof GradingConfigurationException=>'configuration_changed', $e instanceof \UnexpectedValueException=>'invalid_output', default=>'stage_failed' }; }
         $this->locked($id,function($current) use($generation,$attempt,$output,$error) {

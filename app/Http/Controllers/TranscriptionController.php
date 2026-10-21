@@ -33,7 +33,7 @@ class TranscriptionController
                     if ($existing->answer_revision_id!==$photo->id || $existing->created_by!==$request->user()->id || $existing->origin!=='ai' || $existing->version!==$expected+1 || $existing->reason!==$reason) throw ValidationException::withMessages(['transcription'=>'Kunci permintaan sudah digunakan.']);
                 } else {
                     if ($photo->version!==$record->current_version || ($photo->transcriptions()->first()?->version ?? 0)!==$expected) throw ValidationException::withMessages(['transcription'=>'Foto atau transkripsi berubah. Muat ulang sebelum meminta draf AI.']);
-                    $generated=$ai->generate($photo);
+                    $generated=app(\App\Services\AiAudit::class)->within($assessment,'transcription',$photo->id,$key,fn()=>$ai->generate($photo));
                     $workflow->save($assessment,$request->user()->id,$answer,$revision,$key,$expected,'ai',$generated['text'],$reason,$generated);
                 }
             } finally { $lock->release(); }

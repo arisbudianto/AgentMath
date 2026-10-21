@@ -41,13 +41,13 @@ class RubricAi
     private function call(string $name, string $instructions, array $input, array $schema): array
     {
         try {
-            $response = Http::withToken(config('ai.api_key'))->acceptJson()->connectTimeout(10)->timeout(60)
+            $response = app(AiAudit::class)->request($name,config('ai.provider')==='dinoiki'?'m02_v1_dinoiki_contract':'m02_v1',fn()=>Http::withToken(config('ai.api_key'))->acceptJson()->connectTimeout(10)->timeout(60)
                 ->withOptions(['allow_redirects'=>false])->post(app(AiConfiguration::class)->endpoint(), [
                     'model'=>config('ai.model'), 'store'=>false, 'instructions'=>app(AiConfiguration::class)->instructions($instructions,$schema),
                     'input'=>json_encode($input, JSON_UNESCAPED_UNICODE|JSON_THROW_ON_ERROR),
                     'max_output_tokens'=>max(1000, min(8000, (int) config('ai.max_output_tokens', 4000))),
                     'text'=>['format'=>['type'=>'json_schema','name'=>$name,'strict'=>true,'schema'=>$schema]],
-                ]);
+                ]));
             if (!$response->successful() || strlen($response->body()) > 1000000 || $response->json('status') !== 'completed') throw new \RuntimeException();
             $text = '';
             foreach ($response->json('output', []) as $item) {

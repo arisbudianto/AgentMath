@@ -81,8 +81,8 @@ class EvaluationWorkflow {
         try {
             $this->pinned($s->experiment->dataset,$s->case,$s->reference); app(GradingAi::class)->ready($s->experiment->config_snapshot);
             // One NEW independent request; no human labels, M05 outputs, participant IDs or observations enter this call.
-            $output=app(GradingStages::class)->execute('marker_a',$s->case->input_snapshot,[],$s->experiment->config_snapshot);
-            $output=app(GradingStages::class)->validate('marker_a',$output);
+            $output=app(AiAudit::class)->within($s->experiment->dataset->assessment,'baseline',$attempt->id,$attempt->lease_token,fn()=>
+                app(GradingStages::class)->validate('marker_a',app(GradingStages::class)->execute('marker_a',$s->case->input_snapshot,[],$s->experiment->config_snapshot)));
             app(GradingAi::class)->ready($s->experiment->config_snapshot);
             $output['metadata']['duration_ms']=max(0,(int)round((microtime(true)-$start)*1000));
             $output['metadata']['evaluation_protocol']='m08_single_marker_v1';

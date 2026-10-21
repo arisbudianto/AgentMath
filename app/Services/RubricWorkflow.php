@@ -25,7 +25,7 @@ class RubricWorkflow
                 if (!$copy->matchesSource($source)) $this->fail('Dasar soal sudah berubah. Buat draf baru dari soal terbaru.');
                 $data = $copy->only(['rules','criteria','grading_policy']);
             } elseif ($origin === 'ai') {
-                $generated = app(RubricAi::class)->generate($source);
+                $generated = app(AiAudit::class)->within($question->assessment,'rubric',$question->id,$key,fn()=>app(RubricAi::class)->generate($source));
                 $data = $generated['data']; $metadata = $generated['metadata'];
             } else {
                 $data = [

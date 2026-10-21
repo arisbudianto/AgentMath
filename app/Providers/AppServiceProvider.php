@@ -6,6 +6,7 @@ use App\Models\{User, Assessment};
 use App\Policies\AssessmentPolicy;
 class AppServiceProvider extends ServiceProvider
 {
+    public function register(): void { $this->app->singleton(\App\Services\AiAudit::class); }
     public function boot(): void
     {
         \Illuminate\Pagination\Paginator::defaultView('pagination');

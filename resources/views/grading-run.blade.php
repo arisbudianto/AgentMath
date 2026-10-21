@@ -1,5 +1,6 @@
 @extends('layout')
 @section('content')
+<p><a href="{{ route('audit.index',[$assessment,'run'=>$run->id]) }}">Lihat token, biaya dan audit proses ini</a></p>
 <a href="{{ route('grading.index',$assessment) }}">← Semua proses</a><p class="eyebrow">{{ $assessment->title }} · {{ $run->answer->participant->code }}</p><h1>Proses #{{ $run->id }}</h1><p class="notice">{{ $run->label() }} · tahap {{ $run->stage }}. Nilai akhir ditetapkan melalui pemeriksaan guru.</p>
 @if(!$current)<p class="error">Versi jawaban, transkripsi, soal atau rubrik terkini sudah berbeda. Proses ini hanya menjadi riwayat; buat proses baru dari dasar terkini.</p>@endif
 <section class="card"><h2>Status dan tindakan</h2><p>Revisi jawaban {{ $run->revision->version }} · rubrik versi {{ $run->rubric->version }}@if($run->answer_transcription_id) · transkripsi #{{ $run->answer_transcription_id }}@endif</p><p>Worker terakhir selesai: {{ $heartbeat ? \Illuminate\Support\Carbon::parse($heartbeat)->timezone(config('app.display_timezone'))->format('d-m-Y H:i:s T') : 'Belum tercatat' }}. Muat ulang untuk status terbaru.</p>

@@ -19,14 +19,14 @@ class GradingAi
     {
         $this->ready($configuration);
         try {
-            $response=Http::withToken(config('ai.api_key'))->acceptJson()->connectTimeout(10)->timeout(45)
+            $response=app(AiAudit::class)->request($stage,'m05_v1'.($configuration['provider']==='dinoiki'?'_dinoiki_contract':''),fn()=>Http::withToken(config('ai.api_key'))->acceptJson()->connectTimeout(10)->timeout(45)
                 ->withOptions(['allow_redirects'=>false])->post(app(AiConfiguration::class)->endpoint(),[
                     'model'=>$configuration['model'],'store'=>false,
                     'instructions'=>app(AiConfiguration::class)->instructions($instructions,$schema),
                     'input'=>json_encode(['untrusted_data'=>$input],JSON_UNESCAPED_UNICODE|JSON_THROW_ON_ERROR),
                     'max_output_tokens'=>max(1000,min(8000,$configuration['max_output_tokens'])),
                     'text'=>['format'=>['type'=>'json_schema','name'=>'m05_'.$stage,'strict'=>true,'schema'=>$schema]],
-                ]);
+                ]));
             if(!$response->successful() || strlen($response->body())>1000000 || $response->json('status')!=='completed') throw new \RuntimeException();
             $text='';
             foreach($response->json('output',[]) as $item) foreach($item['content'] ?? [] as $part) {

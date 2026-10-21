@@ -55,6 +55,8 @@ class EvaluationTest extends TestCase {
         $this->get($this->base($f))->assertOk()->assertSee('Jalankan eksperimen berpasangan');
         $this->artisan('agentmath:work')->assertSuccessful(); $sample=$e->samples()->first();
         $this->assertSame('succeeded',$sample->status); Http::assertSentCount(1);
+        $this->assertSame(1,\App\Models\AiCall::where('kind','baseline')->count());
+        $this->assertSame(3,\App\Models\AiCall::where('kind','grading')->count());
         Http::assertSent(function($request) {
             $input=json_decode($request['input'],true); $text=$request['input'];
             return array_keys($input['untrusted_data'])===['source','rubric','answer_text'] && !str_contains($text,'HUMAN_SECRET_REASON') && !str_contains($text,'MULTI_SECRET_REASON')
