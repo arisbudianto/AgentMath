@@ -28,6 +28,10 @@ Route::middleware(['auth', 'active'])->group(function () {
     Route::post('/logout', [AuthController::class, 'destroy'])->name('logout');
     Route::view('/dashboard', 'dashboard')->name('dashboard');
     Route::middleware('can:teach')->group(function () {
+        Route::get('/question-bank',[\App\Http\Controllers\QuestionBankController::class,'index'])->name('bank.index');
+        Route::get('/question-bank/pages/{bankPage}',[\App\Http\Controllers\QuestionBankController::class,'page'])->whereNumber('bankPage')->name('bank.page');
+        Route::get('/question-bank/sets/{bankSet}',[\App\Http\Controllers\QuestionBankController::class,'show'])->whereNumber('bankSet')->name('bank.show');
+        Route::post('/question-bank/sets/{bankSet}/copy',[\App\Http\Controllers\QuestionBankController::class,'copy'])->whereNumber('bankSet')->middleware('throttle:10,1')->name('bank.copy');
         Route::get('/assessments/{assessment}/evaluations/{dataset}/quality',[\App\Http\Controllers\ResearchQualityController::class,'index'])->name('research.index');
         Route::get('/assessments/{assessment}/evaluations/{dataset}/quality/export',[\App\Http\Controllers\ResearchQualityController::class,'export'])->middleware('throttle:6,1')->name('research.export');
         Route::get('/assessments/{assessment}/evaluations/{dataset}/cases/{case}/quality/{mode}',[\App\Http\Controllers\ResearchQualityController::class,'form'])->name('research.form');

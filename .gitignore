@@ -13,3 +13,4 @@
 /.tools/
 /docs/*-live.png
 /storage/framework/testing/
+/storage/app/private/bank-books/

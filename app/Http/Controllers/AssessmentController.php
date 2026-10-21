@@ -26,7 +26,7 @@ class AssessmentController
     public function show(Request $request, Assessment $assessment)
     {
         Gate::authorize('view', $assessment);
-        $assessment->load(['classroom', 'questions']);
+        $assessment->load(['classroom', 'questions.bankSource']);
         return view('assessment', [
             'assessment' => $assessment,
             'classrooms' => $request->user()->classrooms()->orderBy('name')->get(),

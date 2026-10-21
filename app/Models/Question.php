@@ -10,6 +10,7 @@ class Question extends Model
 
     protected function casts(): array { return ['number' => 'integer', 'max_score' => 'decimal:2']; }
     public function assessment() { return $this->belongsTo(Assessment::class); }
+    public function bankSource() { return $this->hasOne(BankQuestionLink::class); }
     public function rubricVersions() { return $this->hasMany(RubricVersion::class)->orderByDesc('version'); }
     public function rubricSource(): array
     {

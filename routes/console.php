@@ -1,4 +1,8 @@
 <?php
+\Illuminate\Support\Facades\Artisan::command('agentmath:bank-import {manifest}',function() {
+    $book=app(\App\Services\QuestionBank::class)->install($this->argument('manifest'));
+    $this->info('BANK_IMPORT_PASS book='.$book->code.' chapters='.$book->chapters()->count().' pages='.$book->pages()->count().' sets='.\App\Models\BankSet::whereIn('bank_chapter_id',$book->chapters()->select('id'))->count());
+})->purpose('Import a verified private textbook question bank atomically; identical replay is safe.');
 \Illuminate\Support\Facades\Artisan::command('agentmath:work',function() {
     $lock=\Illuminate\Support\Facades\Cache::lock('grading-worker',180);
     if(!$lock->get()) { $this->info('Worker lain masih aktif.'); return 0; }
