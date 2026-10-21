@@ -10,4 +10,5 @@ class User extends Authenticatable
     protected function casts(): array { return ['password' => 'hashed', 'is_active' => 'boolean']; }
     public function assessments() { return $this->hasMany(Assessment::class, 'owner_id'); }
     public function classrooms() { return $this->hasMany(Classroom::class, 'owner_id'); }
+    public function studentProfile() { return $this->hasOne(StudentProfile::class); }
 }

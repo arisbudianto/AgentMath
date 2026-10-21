@@ -11,6 +11,7 @@ M03A menambahkan transkripsi foto manual/bantuan AI opsional, pemeriksaan bagian
 M04 menambahkan antrean database, snapshot proses, checkpoint, retry terbatas, pembatalan dan worker shared hosting. Lihat [panduan M04](docs/M04.md). Pemeriksaan awal aktif; agent penilaian menunggu M05.
 
 ## Scope terkunci
+- Login siswa tersedia sebagai tambahan uji coba: portal hanya data/jawaban milik peserta yang ditautkan admin; belum ada pengerjaan ujian mandiri. Lihat [akun siswa](docs/STUDENT-ACCOUNTS.md).
 - Pengguna admin dan pengajar; tidak ada registrasi publik.
 - Pengajar hanya dapat mengelola kelas, asesmen, rubrik dan jawaban miliknya.
 - Admin mengelola akun, tanpa akses otomatis ke asesmen.

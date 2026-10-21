@@ -13,5 +13,6 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Assessment::class, AssessmentPolicy::class);
         Gate::define('manage-users', fn (User $u) => $u->is_active && $u->role === 'admin');
         Gate::define('teach', fn (User $u) => $u->is_active && $u->role === 'teacher');
+        Gate::define('learn', fn (User $u) => $u->is_active && $u->role === 'student');
     }
 }

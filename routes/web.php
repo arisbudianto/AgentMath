@@ -16,6 +16,10 @@ Route::middleware('guest')->group(function () {
     Route::post('/login', [AuthController::class, 'store'])->middleware('throttle:10,1');
 });
 Route::middleware(['auth', 'active'])->group(function () {
+    Route::middleware('can:learn')->group(function() {
+        Route::get('/student',[\App\Http\Controllers\StudentController::class,'index'])->name('student.index');
+        Route::get('/student/answers/{answer}/revisions/{revision}/photo',[\App\Http\Controllers\StudentController::class,'photo'])->name('student.photo');
+    });
     Route::post('/logout', [AuthController::class, 'destroy'])->name('logout');
     Route::view('/dashboard', 'dashboard')->name('dashboard');
     Route::middleware('can:teach')->group(function () {

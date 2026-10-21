@@ -11,6 +11,7 @@ TARGET: https://math.speakverse.id
 - Per modul: pengujian, GitHub, CI, cPanel, smoke.
 
 ## IMPLEMENTED
+Student login extension requested after M04: role student, unique immutable user/participant link, admin provisioning, own classroom/answers read-only portal, private photo route and confirmed-only transcription. No self-submission/published exams/final grades. Local 77 tests / 715 assertions PASS; existing-data/FK upgrade PASS. Deployment/account creation pending. Credentials generated in ignored .tools/akun-uji-agentmath.txt; never print or commit passwords. See docs/STUDENT-ACCOUNTS.md.
 M04: durable database grading queue, pinned answer/transcription/rubric/config snapshots without API key, preflight validator, stage contract with isolated Marker contexts, attempt/event history, generation/lease protection, cancel/manual retry/expired worker recovery and bounded CLI worker. Actual grading agents remain M05: preflight stops at awaiting_agent, never creates scores. See docs/M04.md.
 M03A: photo transcription manual/optional vision draft, preserved uncertainties, explicit teacher confirmation, append-only version history, stale-photo/concurrency checks, readyText gate for future grading. AI_TRANSCRIPTION_ENABLED defaults false. See docs/M03A.md.
 M03: typed answers, CSV preview/confirmation with revalidation and atomic commit, private JPG/PNG, immutable answer revisions, source/participant snapshots, duplicate checks and import expiry cleanup. No AI grading/transcription. See docs/M03.md.
