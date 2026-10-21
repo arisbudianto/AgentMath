@@ -22,7 +22,7 @@ Database dan username yang disediakan: speakver_math. Host/port/grants belum div
 7. Pastikan storage dan bootstrap/cache dapat ditulis user PHP; jangan gunakan chmod 777.
 8. `php artisan config:cache` dan `php artisan view:cache`.
 
-AI_ENABLED=false sampai modul penilaian siap. QUEUE_CONNECTION=sync hanya untuk M00, yang belum memakai pekerjaan AI; worker/cron harus ditetapkan sebelum M04.
+AI_ENABLED=false sampai modul penilaian siap. M04 memakai koneksi antrean database khusus `grading`, terpisah dari QUEUE_CONNECTION lama. Worker cron telah dipasang; lihat [operasional M04](M04.md) dan [deployment M04](M04-DEPLOYMENT-2026-10-21.md). Deployment selanjutnya wajib memegang OS lock `/home/speakver/.agentmath-grading.lock` selama maintenance/rsync/cache sampai aplikasi up agar worker tidak memuat kode campuran.
 
 ## Smoke
 - /health menampilkan app=AgentMath.
@@ -37,4 +37,4 @@ AI_ENABLED=false sampai modul penilaian siap. QUEUE_CONNECTION=sync hanya untuk 
 Simpan commit/release sebelumnya. Kembalikan kode ke release sebelumnya tanpa menimpa .env, storage, atau APP_KEY.
 Rollback kode tidak sama dengan rollback database. Jangan menjalankan migrate:rollback pada data nyata tanpa penilaian risiko dan persetujuan khusus karena migration down menghapus tabel.
 
-Status saat penulisan: akses server, PHP, document root, database, HTTPS dan deployment belum diverifikasi.
+Bagian setup awal ini berasal dari M00. Status runtime/deployment terbaru dicatat pada `.ai/STATE.md` dan laporan deployment per modul; M04 sudah memverifikasi worker database dan cron otomatis.
