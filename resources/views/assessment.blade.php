@@ -7,7 +7,7 @@
 @if($issues)<p class="badge">Draf · belum lengkap</p><ul>@foreach($issues as $issue)<li>{{ $issue }}</li>@endforeach</ul>
 @else<p class="badge ready">Paket lengkap</p><p>Kelas, peserta, soal, kunci, pedoman, dan skor maksimum sudah tersedia.</p>@endif
 <p>{{ $assessment->questions->count() }} soal · Total skor maksimum: <strong>{{ number_format($assessment->questions->sum('max_score'), 2, ',', '.') }}</strong></p>
-<p class="muted">Status ini memeriksa kelengkapan data. Susun dan sahkan rubrik setiap soal melalui bagian Rubrik di bawah. Proses penilaian jawaban tersedia pada modul berikutnya.</p>
+<p class="muted">Status ini memeriksa kelengkapan data. Susun dan sahkan rubrik setiap soal melalui bagian Rubrik di bawah. Setelah rubrik disahkan, jalankan penilaian melalui Proses penilaian di atas. Hasil AI berupa usulan yang perlu ditinjau guru.</p>
 @if($assessment->classroom)<p>Kelas: <a href="{{ route('classrooms.show', $assessment->classroom) }}">{{ $assessment->classroom->name }}</a></p>@endif</section>
 <section class="card"><h2>Pengaturan asesmen</h2><form method="POST" action="{{ route('assessments.update', $assessment) }}">@csrf @method('PATCH')
 <label>Judul<input name="title" maxlength="200" required value="{{ old('title', $assessment->title) }}"></label>
