@@ -14,6 +14,8 @@ M04 menambahkan antrean database, snapshot proses, checkpoint, retry terbatas, p
 
 [M07](docs/M07.md) menyediakan rekap peserta dan dua CSV privat (ringkasan peserta/rincian soal). Total akhir hanya tersedia bila semua soal pilihan disahkan guru dan masih berlaku; usulan AI, draf dan hasil historis dibedakan. Publikasi nilai ke portal siswa belum tersedia.
 
+[M08](docs/M08.md) menyediakan dataset penelitian berversi, acuan manusia, pembekuan split per soal, baseline Marker baru yang terisolasi, metrik berpasangan dan ekspor CSV. Hasil sintetis memverifikasi fungsi; akurasi empiris memerlukan acuan manusia independen dan data nyata.
+
 ## Scope terkunci
 - Login siswa tersedia sebagai tambahan uji coba: portal hanya data/jawaban milik peserta yang ditautkan admin; belum ada pengerjaan ujian mandiri. Lihat [akun siswa](docs/STUDENT-ACCOUNTS.md).
 - Pengguna admin dan pengajar; tidak ada registrasi publik.

@@ -9,6 +9,7 @@ Route::pattern('answer', '[0-9]+');
 Route::pattern('revision', '[0-9]+');
 Route::pattern('batch', '[0-9]+');
 Route::pattern('run', '[0-9]+');
+foreach(['dataset','case','experiment','sample'] as $parameter) Route::pattern($parameter,'[0-9]+');
 Route::redirect('/', '/dashboard');
 Route::get('/health', fn () => response()->json(['app' => 'AgentMath', 'status' => 'ok']));
 Route::middleware('guest')->group(function () {
@@ -23,6 +24,19 @@ Route::middleware(['auth', 'active'])->group(function () {
     Route::post('/logout', [AuthController::class, 'destroy'])->name('logout');
     Route::view('/dashboard', 'dashboard')->name('dashboard');
     Route::middleware('can:teach')->group(function () {
+        Route::get('/assessments/{assessment}/evaluations',[\App\Http\Controllers\EvaluationController::class,'index'])->name('evaluations.index');
+        Route::post('/assessments/{assessment}/evaluations',[\App\Http\Controllers\EvaluationController::class,'store'])->name('evaluations.store');
+        Route::get('/assessments/{assessment}/evaluations/{dataset}',[\App\Http\Controllers\EvaluationController::class,'show'])->name('evaluations.show');
+        Route::post('/assessments/{assessment}/evaluations/{dataset}/cases',[\App\Http\Controllers\EvaluationController::class,'add'])->name('evaluations.add');
+        Route::get('/assessments/{assessment}/evaluations/{dataset}/cases/{case}',[\App\Http\Controllers\EvaluationController::class,'case'])->name('evaluations.case');
+        Route::post('/assessments/{assessment}/evaluations/{dataset}/cases/{case}/reference',[\App\Http\Controllers\EvaluationController::class,'label'])->name('evaluations.label');
+        Route::post('/assessments/{assessment}/evaluations/{dataset}/freeze',[\App\Http\Controllers\EvaluationController::class,'freeze'])->name('evaluations.freeze');
+        Route::post('/assessments/{assessment}/evaluations/{dataset}/experiments',[\App\Http\Controllers\EvaluationController::class,'start'])->middleware('throttle:3,1')->name('evaluations.start');
+        Route::get('/assessments/{assessment}/evaluations/{dataset}/experiments/{experiment}',[\App\Http\Controllers\EvaluationController::class,'experiment'])->name('evaluations.experiment');
+        Route::post('/assessments/{assessment}/evaluations/{dataset}/experiments/{experiment}/control',[\App\Http\Controllers\EvaluationController::class,'control'])->middleware('throttle:6,1')->name('evaluations.control');
+        Route::get('/assessments/{assessment}/evaluations/{dataset}/experiments/{experiment}/samples/{sample}',[\App\Http\Controllers\EvaluationController::class,'sample'])->name('evaluations.sample');
+        Route::post('/assessments/{assessment}/evaluations/{dataset}/experiments/{experiment}/samples/{sample}/observations',[\App\Http\Controllers\EvaluationController::class,'observe'])->name('evaluations.observe');
+        Route::get('/assessments/{assessment}/evaluations/{dataset}/experiments/{experiment}/export',[\App\Http\Controllers\EvaluationController::class,'export'])->middleware('throttle:6,1')->name('evaluations.export');
         Route::get('/assessments/{assessment}/results',[\App\Http\Controllers\ResultReportController::class,'index'])->name('results.index');
         Route::get('/assessments/{assessment}/results/export',[\App\Http\Controllers\ResultReportController::class,'export'])->middleware('throttle:6,1')->name('results.export');
         Route::get('/assessments/{assessment}/grading-runs/{run}/review',[\App\Http\Controllers\GradeReviewController::class,'show'])->name('reviews.show');

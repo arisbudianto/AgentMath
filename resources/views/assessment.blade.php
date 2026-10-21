@@ -4,6 +4,7 @@
 <p><a class="button" href="{{ route('answers.index',$assessment) }}">Kelola jawaban · ketikan, CSV, foto</a></p>
 <p><a class="button" href="{{ route('grading.index',$assessment) }}">Proses penilaian · antrean dan riwayat</a></p>
 <p><a class="button" href="{{ route('results.index',$assessment) }}">Rekap peserta dan ekspor CSV</a></p>
+<p><a class="button" href="{{ route('evaluations.index',$assessment) }}">Evaluasi penelitian · acuan manusia dan eksperimen</a></p>
 <section class="card"><h2>Kelengkapan paket</h2>
 @if($issues)<p class="badge">Draf · belum lengkap</p><ul>@foreach($issues as $issue)<li>{{ $issue }}</li>@endforeach</ul>
 @else<p class="badge ready">Paket lengkap</p><p>Kelas, peserta, soal, kunci, pedoman, dan skor maksimum sudah tersedia.</p>@endif
