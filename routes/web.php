@@ -10,6 +10,7 @@ Route::pattern('revision', '[0-9]+');
 Route::pattern('batch', '[0-9]+');
 Route::pattern('run', '[0-9]+');
 foreach(['dataset','case','experiment','sample'] as $parameter) Route::pattern($parameter,'[0-9]+');
+Route::pattern('task','[0-9]+');
 Route::redirect('/', '/dashboard');
 Route::get('/health', fn () => response()->json(['app' => 'AgentMath', 'status' => 'ok']));
 Route::middleware('guest')->group(function () {
@@ -18,12 +19,17 @@ Route::middleware('guest')->group(function () {
 });
 Route::middleware(['auth', 'active'])->group(function () {
     Route::middleware('can:learn')->group(function() {
+        Route::get('/student/tasks',[\App\Http\Controllers\StudentTaskController::class,'index'])->name('student.tasks.index');
+        Route::get('/student/tasks/{task}',[\App\Http\Controllers\StudentTaskController::class,'show'])->name('student.tasks.show');
+        Route::post('/student/tasks/{task}/questions/{question}',[\App\Http\Controllers\StudentTaskController::class,'submit'])->middleware('throttle:6,1')->name('student.tasks.submit');
         Route::get('/student',[\App\Http\Controllers\StudentController::class,'index'])->name('student.index');
         Route::get('/student/answers/{answer}/revisions/{revision}/photo',[\App\Http\Controllers\StudentController::class,'photo'])->name('student.photo');
     });
     Route::post('/logout', [AuthController::class, 'destroy'])->name('logout');
     Route::view('/dashboard', 'dashboard')->name('dashboard');
     Route::middleware('can:teach')->group(function () {
+        Route::get('/assessments/{assessment}/student-tasks',[\App\Http\Controllers\StudentTaskController::class,'manage'])->name('tasks.manage');
+        Route::post('/assessments/{assessment}/student-tasks',[\App\Http\Controllers\StudentTaskController::class,'control'])->middleware('throttle:6,1')->name('tasks.control');
         Route::get('/assessments/{assessment}/publications',[\App\Http\Controllers\GradePublicationController::class,'index'])->name('publications.index');
         Route::post('/assessments/{assessment}/publications/{answer}',[\App\Http\Controllers\GradePublicationController::class,'store'])->middleware('throttle:12,1')->name('publications.store');
         Route::get('/assessments/{assessment}/audit',[\App\Http\Controllers\AiAuditController::class,'index'])->name('audit.index');

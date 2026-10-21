@@ -8,8 +8,4 @@ Admin membuat akun guru seperti sebelumnya. Untuk siswa, guru lebih dahulu membu
 
 Setelah login, siswa membuka **Ruang siswa** untuk melihat kelas, kode dan jawaban miliknya yang dicatat guru. Jawaban ketikan/foto terkini tersedia; transkripsi foto hanya tampil bila versi terbaru confirmed. Draf koreksi tidak tampil. Foto di-stream melalui rute khusus yang memeriksa kepemilikan peserta dan revisi terkini, dengan no-store/private, MIME tetap dan CSP sandbox. Siswa tidak menerima kunci, pedoman, rubrik, hasil agent, data peserta lain atau akses halaman guru/admin.
 
-**Batas cakupan:** belum ada pengerjaan ujian/pengiriman jawaban mandiri, publikasi soal, nilai akhir, reset password atau registrasi siswa mandiri. Portal tidak membuka seluruh asesmen kelas karena belum ada status publikasi soal. Guru tetap mengelola jawaban; M05 masih tahap pengembangan berikutnya.
-
-Migrasi memperluas enum users.role dan menambah student_profiles; tidak mengganti kredensial/role akun lama. Down migration menolak berjalan selama masih ada akun siswa agar tidak menghapus data secara diam-diam. Jika perlu rollback kode, tahan login siswa sambil mempertahankan tabel dan role baru sampai rencana pemulihan disiapkan.
-
-Pengujian: login/logout/nonaktif, admin provisioning dan rollback duplikasi, peserta invalid/pengajar nonaktif, isolasi siswa/guru/admin, foto privat/current revision, draf vs confirmed transcription, kunci/rubrik/jawaban orang lain tidak bocor, dan upgrade dengan user/class/participant/question/answer lama beserta FK. Kredensial uji dibuat acak di luar Git, hanya hash dikirim ke server. Akun uji dan jawaban contoh memakai data sintetis, tanpa nilai.
+**Cakupan terkini:** M10 menyediakan publikasi/cabut nilai oleh guru; M11 menyediakan tugas yang dibuka guru dan pengiriman ketikan/foto oleh siswa terkait. Tidak ada registrasi siswa mandiri, reset password mandiri, atau akses otomatis ke seluruh asesmen kelas. Lihat docs/M10.md dan docs/M11.md.

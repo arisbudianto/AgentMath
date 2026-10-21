@@ -1,5 +1,6 @@
 @extends('layout')
 @section('content')
+<p><a class="button" href="{{ route('tasks.manage',$assessment) }}">Tugas siswa · buka dan tutup pengiriman</a></p>
 <p><a class="button" href="{{ route('publications.index',$assessment) }}">Publikasi nilai siswa · terbit dan cabut</a></p>
 <a href="{{ route('assessments.index') }}">← Semua asesmen</a><p class="eyebrow">PAKET ASESMEN MILIK ANDA</p><h1>{{ $assessment->title }}</h1>
 <p><a class="button" href="{{ route('answers.index',$assessment) }}">Kelola jawaban · ketikan, CSV, foto</a></p>

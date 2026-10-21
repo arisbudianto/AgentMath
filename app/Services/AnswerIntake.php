@@ -78,7 +78,7 @@ class AnswerIntake
                 $source=$question->rubricSource();
                 $version=$answer->current_version+1;
                 $answer->revisions()->create([
-                    'version'=>$version,'created_by'=>$actor,'content_type'=>$photo?'photo':'text','origin'=>$photo?'photo':(($payload['origin'] ?? '')==='csv'?'csv':'manual'),
+                    'version'=>$version,'created_by'=>$actor,'content_type'=>$photo?'photo':'text','origin'=>($payload['origin'] ?? '')==='student'?'student':($photo?'photo':(($payload['origin'] ?? '')==='csv'?'csv':'manual')),
                     'import_batch_id'=>($payload['origin'] ?? '')==='csv'?($payload['import_batch_id'] ?? null):null,
                     'answer_text'=>$text,'photo_path'=>$storedPath,'photo_mime'=>$mime,'content_hash'=>$hash,
                     'participant_code_snapshot'=>$participant->code,'question_snapshot'=>['number'=>$question->number]+$source,
