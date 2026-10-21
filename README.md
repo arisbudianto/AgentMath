@@ -12,6 +12,8 @@ M04 menambahkan antrean database, snapshot proses, checkpoint, retry terbatas, p
 
 [M06](docs/M06.md) menyediakan pemeriksaan bukti, koreksi skor dengan alasan, draf dan persetujuan guru yang berversi. Nilai guru terpisah dari usulan AI; rekap/ekspor dan publikasi siswa belum tersedia.
 
+[M07](docs/M07.md) menyediakan rekap peserta dan dua CSV privat (ringkasan peserta/rincian soal). Total akhir hanya tersedia bila semua soal pilihan disahkan guru dan masih berlaku; usulan AI, draf dan hasil historis dibedakan. Publikasi nilai ke portal siswa belum tersedia.
+
 ## Scope terkunci
 - Login siswa tersedia sebagai tambahan uji coba: portal hanya data/jawaban milik peserta yang ditautkan admin; belum ada pengerjaan ujian mandiri. Lihat [akun siswa](docs/STUDENT-ACCOUNTS.md).
 - Pengguna admin dan pengajar; tidak ada registrasi publik.

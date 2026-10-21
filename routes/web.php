@@ -23,6 +23,8 @@ Route::middleware(['auth', 'active'])->group(function () {
     Route::post('/logout', [AuthController::class, 'destroy'])->name('logout');
     Route::view('/dashboard', 'dashboard')->name('dashboard');
     Route::middleware('can:teach')->group(function () {
+        Route::get('/assessments/{assessment}/results',[\App\Http\Controllers\ResultReportController::class,'index'])->name('results.index');
+        Route::get('/assessments/{assessment}/results/export',[\App\Http\Controllers\ResultReportController::class,'export'])->middleware('throttle:6,1')->name('results.export');
         Route::get('/assessments/{assessment}/grading-runs/{run}/review',[\App\Http\Controllers\GradeReviewController::class,'show'])->name('reviews.show');
         Route::post('/assessments/{assessment}/grading-runs/{run}/review',[\App\Http\Controllers\GradeReviewController::class,'store'])->middleware('throttle:12,1')->name('reviews.store');
         Route::get('/assessments/{assessment}/grading-runs',[\App\Http\Controllers\GradingRunController::class,'index'])->name('grading.index');
