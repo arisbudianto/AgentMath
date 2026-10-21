@@ -8,14 +8,14 @@ class EvaluationData {
     public static function hash(mixed $v): string { return hash('sha256',json_encode($v,JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_THROW_ON_ERROR)); }
     public function owner(Assessment $a,int $actor): void { abort_unless($a->owner_id===$actor && $a->owner->role==='teacher' && $a->owner->is_active,403); }
     public function fail(string $text): never { throw ValidationException::withMessages(['evaluation'=>$text]); }
-    public function dataset(Assessment $assessment,int $actor,string $key,string $name,string $kind,string $goal,string $target,string $tolerance): EvalDataset {
+    public function dataset(Assessment $assessment,int $actor,string $key,string $name,string $kind,string $goal,string $target,string $tolerance,bool $twoHumans=false): EvalDataset {
         Validator::make(compact('key','name','kind','goal','target','tolerance'),[
             'key'=>'required|uuid','name'=>'required|string|max:160','kind'=>'required|in:synthetic,real',
             'goal'=>'required|string|max:2000','target'=>'required|string|max:2000','tolerance'=>'required|numeric|between:0,100',
         ])->validate();
         if(trim($name)==='' || trim($goal)==='' || trim($target)==='') $this->fail('Nama, tujuan dan sasaran penelitian wajib diisi.');
         $bps=RubricValidator::cents($tolerance);
-        $protocol=['version'=>'m08_v1','goal'=>$goal,'target'=>$target,'tolerance_bps'=>$bps,'split_policy'=>'question_group','reference_policy'=>'human_independent_attested','baseline'=>'one_fresh_m05_marker','metrics'=>'m08_v1'];
+        $protocol=['version'=>'m08_v1','goal'=>$goal,'target'=>$target,'tolerance_bps'=>$bps,'split_policy'=>'question_group','reference_policy'=>$twoHumans?'two_humans_adjudicated':'human_independent_attested','baseline'=>'one_fresh_m05_marker','metrics'=>'m08_v1'];
         $hash=self::hash([$assessment->id,$actor,$name,$kind,$protocol]);
         return DB::transaction(function() use($assessment,$actor,$key,$name,$kind,$protocol,$hash) {
             $a=Assessment::lockForUpdate()->findOrFail($assessment->id); $this->owner($a,$actor);
@@ -85,7 +85,8 @@ class EvaluationData {
             foreach($cases as $c) {
                 $this->validCase($c); $r=$c->references()->first(); if(!$r || !$r->independent) $this->fail('Setiap kasus wajib memiliki acuan manusia independen yang dinyatakan.');
                 $this->validReference($r,$c);
-                $manifest[]=['case_id'=>$c->id,'reference_id'=>$r->id,'input_hash'=>$c->input_hash,'reference_hash'=>$r->reference_hash,'split'=>$c->split];
+                $entry=['case_id'=>$c->id,'reference_id'=>$r->id,'input_hash'=>$c->input_hash,'reference_hash'=>$r->reference_hash,'split'=>$c->split];
+                $quality=app(ResearchQuality::class)->freezeEntry($d,$c,$r); if($quality) $entry['quality']=$quality; $manifest[]=$entry;
             }
             $body=['protocol'=>$d->protocol,'data_kind'=>$d->data_kind,'cases'=>$manifest];
             $d->update(['status'=>'frozen','manifest'=>$body,'manifest_hash'=>self::hash($body),'frozen_at'=>now()]); return $d;

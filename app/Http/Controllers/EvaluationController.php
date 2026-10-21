@@ -13,8 +13,8 @@ class EvaluationController {
     }
     public function store(Request $request,Assessment $assessment,EvaluationData $workflow) {
         Gate::authorize('update',$assessment); $v=$request->validate(['creation_key'=>'required|uuid','name'=>'required|string|max:160','data_kind'=>'required|in:synthetic,real',
-            'goal'=>'required|string|max:2000','target'=>'required|string|max:2000','tolerance'=>'required|numeric|between:0,100']);
-        $d=$workflow->dataset($assessment,$request->user()->id,$v['creation_key'],$v['name'],$v['data_kind'],$v['goal'],$v['target'],(string)$v['tolerance']);
+            'goal'=>'required|string|max:2000','target'=>'required|string|max:2000','tolerance'=>'required|numeric|between:0,100','two_humans'=>'sometimes|accepted']);
+        $d=$workflow->dataset($assessment,$request->user()->id,$v['creation_key'],$v['name'],$v['data_kind'],$v['goal'],$v['target'],(string)$v['tolerance'],$request->boolean('two_humans'));
         return redirect()->route('evaluations.show',[$assessment,$d]);
     }
     public function show(Assessment $assessment,int $dataset) {

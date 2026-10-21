@@ -28,6 +28,10 @@ Route::middleware(['auth', 'active'])->group(function () {
     Route::post('/logout', [AuthController::class, 'destroy'])->name('logout');
     Route::view('/dashboard', 'dashboard')->name('dashboard');
     Route::middleware('can:teach')->group(function () {
+        Route::get('/assessments/{assessment}/evaluations/{dataset}/quality',[\App\Http\Controllers\ResearchQualityController::class,'index'])->name('research.index');
+        Route::get('/assessments/{assessment}/evaluations/{dataset}/quality/export',[\App\Http\Controllers\ResearchQualityController::class,'export'])->middleware('throttle:6,1')->name('research.export');
+        Route::get('/assessments/{assessment}/evaluations/{dataset}/cases/{case}/quality/{mode}',[\App\Http\Controllers\ResearchQualityController::class,'form'])->name('research.form');
+        Route::post('/assessments/{assessment}/evaluations/{dataset}/cases/{case}/quality/{mode}',[\App\Http\Controllers\ResearchQualityController::class,'store'])->middleware('throttle:12,1')->name('research.store');
         Route::get('/assessments/{assessment}/student-tasks',[\App\Http\Controllers\StudentTaskController::class,'manage'])->name('tasks.manage');
         Route::post('/assessments/{assessment}/student-tasks',[\App\Http\Controllers\StudentTaskController::class,'control'])->middleware('throttle:6,1')->name('tasks.control');
         Route::get('/assessments/{assessment}/publications',[\App\Http\Controllers\GradePublicationController::class,'index'])->name('publications.index');

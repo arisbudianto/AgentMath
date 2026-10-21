@@ -1,5 +1,7 @@
 @extends('layout')
 @section('content')
+<p><a class="button" href="{{ route('research.index',[$assessment,$dataset]) }}">Mutu acuan · dua penilai dan transkripsi foto</a></p>
+<p>Kebijakan acuan: {{ $dataset->protocol['reference_policy'] }}</p>
 <a href="{{ route('evaluations.index',$assessment) }}">← Dataset evaluasi</a><p class="eyebrow">{{ $assessment->title }} · {{ $dataset->data_kind }}</p><h1>{{ $dataset->name }}</h1>
 @if($dataset->data_kind==='synthetic')<p class="notice">Dataset sintetis hanya membuktikan fungsi perhitungan/alur, bukan kualitas penilaian pada siswa nyata.</p>
 @endif

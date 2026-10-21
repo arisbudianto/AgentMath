@@ -9,6 +9,7 @@
 <label>Tujuan penelitian<textarea name="goal" required maxlength="2000" rows="3"></textarea></label>
 <label>Sasaran keberhasilan yang ditetapkan sebelum eksperimen<textarea name="target" required maxlength="2000" rows="3" placeholder="Nyatakan metrik, ambang, ukuran/karakteristik sampel, dan cara membandingkan dengan acuan manusia."></textarea></label>
 <label>Toleransi kesalahan (% dari maksimum tiap total/kriteria)<input type="number" name="tolerance" min="0" max="100" step="0.01" value="0" required></label>
+<label class="check"><input type="checkbox" name="two_humans" value="1">Wajib dua penilaian manusia berkode berbeda dan adjudikasi sebelum pembekuan (M12).</label>
 <p>0 berarti kecocokan persis. Kasus keliru bila total atau setidaknya satu kriteria melewati toleransi. Protokol dan pembagian per soal akan dibekukan; aplikasi menyajikan metrik deskriptif, tidak menyatakan kelayakan otomatis.</p><button>Buat dataset evaluasi</button></form></section>
 <section class="card"><h2>Dataset Anda</h2>@forelse($datasets as $d)<article><h3><a href="{{ route('evaluations.show',[$assessment,$d]) }}">{{ $d->name }}</a></h3><p>{{ $d->data_kind }} · {{ $d->status }}</p></article>
 @empty<p>Belum ada dataset. Siapkan acuan manusia dan rencana pengujian terlebih dahulu.</p>

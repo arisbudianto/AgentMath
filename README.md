@@ -59,3 +59,5 @@ CI menguji PHP 8.3/8.4 dengan SQLite dan MariaDB, termasuk login gagal/nonaktif,
 
 ## Deployment
 Lihat `docs/DEPLOYMENT.md`. Setiap modul: test, push GitHub, CI berhasil, deploy commit yang sama, smoke test.
+
+M12: dua label manusia/adjudikasi dan kualitas transkripsi foto terpisah; lihat [panduan M12](docs/M12.md).

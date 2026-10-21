@@ -59,6 +59,8 @@ class EvaluationWorkflow {
         $entry=collect($entries)->firstWhere('case_id',$c->id);
         if(!$entry || $r->eval_case_id!==$c->id || $c->eval_dataset_id!==$d->id || $entry['reference_id']!==$r->id || $entry['input_hash']!==$c->input_hash || $entry['reference_hash']!==$r->reference_hash || $entry['split']!==$c->split) $data->fail('Snapshot eksperimen tidak sesuai manifest.');
         $data->validCase($c); $data->validReference($r,$c);
+        if(($d->protocol['reference_policy'] ?? '')==='two_humans_adjudicated' && !isset($entry['quality']['human_a'],$entry['quality']['human_b'],$entry['quality']['adjudication'])) $data->fail('Manifest kehilangan acuan dua penilai.');
+        app(ResearchQuality::class)->pinned($entry,$c);
     }
     private function locked(int $sampleId,callable $fn): mixed {
         $s=EvalSample::findOrFail($sampleId); $assessmentId=$s->experiment->dataset->assessment_id;
