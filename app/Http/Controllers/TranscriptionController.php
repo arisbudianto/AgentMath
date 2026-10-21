@@ -17,7 +17,7 @@ class TranscriptionController
     public function show(Assessment $assessment, int $answer, int $revision, AiConfiguration $ai, TranscriptionWorkflow $workflow) {
         Gate::authorize('view',$assessment);
         [$record,$photo]=$this->target($assessment,$answer,$revision);
-        return view('transcription',['assessment'=>$assessment,'answer'=>$record,'photo'=>$photo,'latest'=>$photo->transcriptions()->first(),'history'=>$photo->transcriptions()->with('creator')->paginate(20),'current'=>$photo->version===$record->current_version,'ready'=>$workflow->readyText($record)!==null,'aiReady'=>config('ai.transcription_enabled') && $ai->status()['enabled'] && $ai->status()['configured'] && config('ai.provider')==='openai']);
+        return view('transcription',['assessment'=>$assessment,'answer'=>$record,'photo'=>$photo,'latest'=>$photo->transcriptions()->first(),'history'=>$photo->transcriptions()->with('creator')->paginate(20),'current'=>$photo->version===$record->current_version,'ready'=>$workflow->readyText($record)!==null,'aiReady'=>config('ai.transcription_enabled') && $ai->status()['enabled'] && $ai->status()['configured'],'aiRecipient'=>$ai->label()]);
     }
     public function store(Request $request, Assessment $assessment, int $answer, int $revision, TranscriptionWorkflow $workflow, TranscriptionAi $ai) {
         Gate::authorize('update',$assessment);

@@ -10,7 +10,7 @@ class RubricWorkflow
 {
     public function create(Question $question, int $actor, string $key, string $origin, ?RubricVersion $copy = null): RubricVersion
     {
-        $lock = Cache::lock('m02-create:'.$question->id.':'.$key, 120);
+        $lock = Cache::lock('m02-create:'.$question->id.':'.$key, 180);
         if (!$lock->get()) $this->fail('Pembuatan draf ini masih berjalan. Muat ulang halaman sebelum mencoba lagi.');
         try {
             $existing = RubricVersion::where('creation_key', $key)->first();
