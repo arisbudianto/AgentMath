@@ -19,6 +19,8 @@ class DinoikiAiTest extends TestCase {
         $this->assertSame('R1',$result['data']['rules'][0]['rule_id']); Http::assertSentCount(2);
         Http::assertSent(fn($request)=>$request->url()==='https://ai.dinoiki.com/v1/responses' && $request->hasHeader('Authorization','Bearer DINOIKI_TEST_SECRET') && $request['model']==='gpt-5-mini' && $request['store']===false && $request['text']['format']['strict']===true);
         $this->assertSame('https://ai.dinoiki.com/v1/responses',app(AiConfiguration::class)->endpoint());
+        Http::assertSent(fn($request)=>str_contains($request['instructions'],'JSON Schema aplikasi') && str_contains($request['instructions'],'"additionalProperties":false'));
+        $this->assertSame('m02_v1_dinoiki_contract',$result['metadata']['prompt_version']);
         $this->assertStringNotContainsString('DINOIKI_TEST_SECRET',json_encode(app(AiConfiguration::class)->status()));
     }
     public function test_dinoiki_vision_uses_private_bytes_and_returns_unconfirmed_draft_data(): void {
