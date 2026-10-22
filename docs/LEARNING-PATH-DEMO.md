@@ -11,3 +11,7 @@ Kelas **DEMO - Matematika Kelas 1** dimiliki akun guru demo. Kelas memakai buku 
 | `siswa-demo-posttest@example.test` | 9 | Materi 1–8 sudah ditandai selesai; post-test terbuka. |
 
 Guru demo masuk dengan `guru-demo-kelas1@example.test` dan membuka kelas demo lalu **Jalur belajar** untuk melihat kemajuan ketiga peserta. Tanda selesai pada akun tahap 9 dan jawaban pretest adalah data sintetis untuk memperagakan tampilan; belum ada pemeriksaan guru atau nilai terbit. Semua halaman materi tetap berasal dari buku privat dengan pemeriksaan checksum. Akun contoh tidak memiliki akses ke kelas lain.
+
+## Pemasangan produksi, 22 Oktober 2026
+
+Commit `372859b18ea0a5ddb33907d07ad70bd2e78fcfde` lulus 167 tes (1744 assertions) dan GitHub Actions run 39715993475. Skrip dijalankan satu kali di cPanel di bawah penguncian worker. Kelas demo bernomor 19. Hasilnya: satu jalur, 10 bukti tahap (satu untuk peserta Materi 1 dan sembilan untuk peserta post-test), 242 kunjungan halaman, empat pengiriman jawaban pretest, dan nol panggilan AI. Pemeriksaan browser pada akun guru dan ketiga siswa menunjukkan tahap 0/1/9 sesuai skenario. Kesehatan situs HTTP 200 dan checksum `.env` tidak berubah. Kata sandi acak hanya diberikan kepada pemilik proyek di percakapan, tidak dicatat dalam dokumen ini.
