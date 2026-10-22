@@ -41,8 +41,8 @@ class AssessmentController
             $current=Assessment::whereKey($assessment->id)->lockForUpdate()->firstOrFail();
             if (array_key_exists('classroom_id',$data)) {
                 $id=$data['classroom_id'] === null ? null : (int)$data['classroom_id'];
-                if ($current->classroom_id !== $id && $current->answers()->exists()) {
-                    throw \Illuminate\Validation\ValidationException::withMessages(['classroom_id'=>'Kelas tidak dapat diganti setelah asesmen memiliki jawaban. Buat asesmen baru untuk kelas lain.']);
+                if ($current->classroom_id !== $id && ($current->answers()->exists() || \App\Models\LearningPath::where('pre_assessment_id',$current->id)->orWhere('post_assessment_id',$current->id)->exists())) {
+                    throw \Illuminate\Validation\ValidationException::withMessages(['classroom_id'=>'Kelas tidak dapat diganti setelah asesmen dipakai pada jalur belajar atau memiliki jawaban. Buat asesmen baru untuk kelas lain.']);
                 }
                 $current->classroom_id=$id;
             }

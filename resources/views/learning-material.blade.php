@@ -1,0 +1,10 @@
+@extends('layout')
+@section('content')
+<div class="student-page learning-page"><nav class="student-crumb"><a href="{{ route('learning.index') }}">Jalur belajar</a><span aria-hidden="true">/</span><span>Materi {{ $unit->number }}</span></nav>
+<section class="student-task-intro"><p class="student-kicker">MATERI {{ $unit->number }} DARI 8</p><h1>{{ $unit->title }}</h1><p class="preserve">{{ $unit->objectives }}</p><div class="student-task-meta"><span>{{ count($visited) }} / {{ $pages->count() }} halaman selesai</span><span>Halaman {{ $unit->start_page }}–{{ $unit->end_page }}</span></div></section>
+<p class="student-help-note">Buka setiap halaman buku, baca bersama guru bila perlu, lalu tekan “Sudah membaca” pada halaman tersebut. Materi berikutnya terbuka setelah semua halaman bab ini selesai.</p>
+<section class="learning-activities"><p class="student-kicker">KEGIATAN DI BUKU</p><h2>Yang akan kamu temukan</h2><div class="learning-activity-grid">@foreach($sets as $set)<div><strong>{{ $set->title }}</strong><span>{{ \App\Services\QuestionBank::KINDS[$set->kind] ?? 'Kegiatan' }} · halaman {{ $set->start_page }}–{{ $set->end_page }}</span></div>@endforeach</div><p class="student-note">Kerjakan latihan di buku bersama guru. Jawaban pada tahap materi ini tidak dinilai otomatis.</p></section>
+<div class="learning-page-grid">@foreach($pages as $page)<a class="learning-page-card {{ in_array($page->id,$visited,true)?'is-read':'' }}" href="{{ route('learning.page',[$unit->number,$page->number]) }}"><span>Halaman {{ $page->number }}</span><strong>{{ in_array($page->id,$visited,true)?'✓ Sudah dibaca':'Buka halaman →' }}</strong></a>@endforeach</div>
+@if($current===$unit->number && count($visited)===$pages->count())<form class="learning-finish" method="POST" action="{{ route('learning.complete',$unit->number) }}">@csrf<label class="check"><input type="checkbox" name="confirmation" value="1" required>Saya sudah mempelajari semua halaman Materi {{ $unit->number }}.</label><button>Selesaikan Materi {{ $unit->number }} dan lanjutkan →</button></form>@endif
+</div>
+@endsection

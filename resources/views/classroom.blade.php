@@ -1,6 +1,7 @@
 @extends('layout')
 @section('content')
 <a href="{{ route('classrooms.index') }}">← Semua kelas</a><p class="eyebrow">KELAS MILIK ANDA</p><h1>{{ $classroom->name }}</h1>
+@if($classroom->grade===1)<p><a class="button" href="{{ route('learning.manage',$classroom) }}">Siapkan jalur belajar kelas 1 →</a></p>@endif
 <section class="card"><h2>Pengaturan kelas</h2><form method="POST" action="{{ route('classrooms.update', $classroom) }}">@csrf @method('PATCH')
 <label>Nama kelas<input name="name" maxlength="120" required value="{{ old('name', $classroom->name) }}"></label>
 <div class="form-grid"><label>Jenjang SD<select name="grade" required>@for($i=1;$i<=6;$i++)<option value="{{ $i }}" @selected(old('grade', $classroom->grade) == $i)>Kelas {{ $i }}</option>@endfor</select></label>

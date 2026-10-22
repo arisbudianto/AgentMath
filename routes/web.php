@@ -19,6 +19,12 @@ Route::middleware('guest')->group(function () {
 });
 Route::middleware(['auth', 'active'])->group(function () {
     Route::middleware('can:learn')->group(function() {
+        Route::get('/student/path',[\App\Http\Controllers\LearningPathController::class,'index'])->name('learning.index');
+        Route::get('/student/path/materials/{chapter}',[\App\Http\Controllers\LearningPathController::class,'material'])->whereNumber('chapter')->name('learning.material');
+        Route::post('/student/path/materials/{chapter}/complete',[\App\Http\Controllers\LearningPathController::class,'complete'])->whereNumber('chapter')->middleware('throttle:12,1')->name('learning.complete');
+        Route::get('/student/path/materials/{chapter}/pages/{page}',[\App\Http\Controllers\LearningPathController::class,'page'])->whereNumber('chapter')->whereNumber('page')->name('learning.page');
+        Route::get('/student/path/materials/{chapter}/pages/{page}/image',[\App\Http\Controllers\LearningPathController::class,'image'])->whereNumber('chapter')->whereNumber('page')->name('learning.image');
+        Route::post('/student/path/materials/{chapter}/pages/{page}/read',[\App\Http\Controllers\LearningPathController::class,'read'])->whereNumber('chapter')->whereNumber('page')->middleware('throttle:30,1')->name('learning.read');
         Route::get('/student/tasks',[\App\Http\Controllers\StudentTaskController::class,'index'])->name('student.tasks.index');
         Route::get('/student/tasks/{task}',[\App\Http\Controllers\StudentTaskController::class,'show'])->name('student.tasks.show');
         Route::post('/student/tasks/{task}/questions/{question}',[\App\Http\Controllers\StudentTaskController::class,'submit'])->middleware('throttle:6,1')->name('student.tasks.submit');
@@ -28,6 +34,8 @@ Route::middleware(['auth', 'active'])->group(function () {
     Route::post('/logout', [AuthController::class, 'destroy'])->name('logout');
     Route::view('/dashboard', 'dashboard')->name('dashboard');
     Route::middleware('can:teach')->group(function () {
+        Route::get('/classrooms/{classroom}/learning-path',[\App\Http\Controllers\LearningPathController::class,'manage'])->name('learning.manage');
+        Route::post('/classrooms/{classroom}/learning-path',[\App\Http\Controllers\LearningPathController::class,'store'])->middleware('throttle:6,1')->name('learning.store');
         Route::get('/question-bank',[\App\Http\Controllers\QuestionBankController::class,'index'])->name('bank.index');
         Route::get('/question-bank/pages/{bankPage}',[\App\Http\Controllers\QuestionBankController::class,'page'])->whereNumber('bankPage')->name('bank.page');
         Route::get('/question-bank/sets/{bankSet}',[\App\Http\Controllers\QuestionBankController::class,'show'])->whereNumber('bankSet')->name('bank.show');

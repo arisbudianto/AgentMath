@@ -8,7 +8,7 @@
     @forelse($available as $task)
         <a class="student-task-card" href="{{ route('student.tasks.show',$task['id']) }}"><span class="student-task-icon" aria-hidden="true">✎</span><span class="student-pill">{{ count($task['questions']) }} soal</span><strong>{{ $task['title'] }}</strong><span>Batas: {{ $task['closes_at']->timezone(config('app.display_timezone'))->format('d M Y, H:i') }} WIB</span><b>Kerjakan tugas <span aria-hidden="true">→</span></b></a>
     @empty
-        <section class="student-empty"><span aria-hidden="true">☆</span><h3>Belum ada tugas terbuka</h3><p>Tugas baru akan muncul saat guru membukanya. Sambil menunggu, kamu bisa melihat kembali jawabanmu.</p><a class="student-cta" href="{{ route('student.index') }}">Lihat jawaban saya →</a></section>
+        <section class="student-empty"><span aria-hidden="true">☆</span><h3>Belum ada tugas terbuka</h3><p>Tugas baru akan muncul saat guru membukanya. Sambil menunggu, kamu bisa melihat kembali jawabanmu.</p>@if((int)(auth()->user()->studentProfile?->participant?->classroom?->grade ?? 0)===1)<a class="student-cta" href="{{ route('learning.index') }}">Lanjutkan jalur belajar →</a>@else<a class="student-cta" href="{{ route('student.index') }}">Lihat jawaban saya →</a>@endif</section>
     @endforelse
     </div>
     {{ $pages->links() }}

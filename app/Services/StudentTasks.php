@@ -37,6 +37,7 @@ class StudentTasks {
     public function visible(StudentTask $task,Participant $p): ?array {
         $a=$task->assessment;
         if($task->action!=='open' || !$task->closes_at?->isFuture() || $this->head($a->id)?->id!==$task->id || $task->classroom_id!==$p->classroom_id || $a->classroom_id!==$p->classroom_id || !$a->owner->is_active || $a->owner->role!=='teacher') return null;
+        if(!app(LearningPaths::class)->taskAllowed($p,$task)) return null;
         try {
             $fresh=$this->snapshot($a); if($fresh!==$task->snapshot || !hash_equals($task->snapshot_hash,EvaluationData::hash($fresh))) return null;
             $fresh['questions']=array_map(fn($q)=>array_intersect_key($q,array_flip(['id','number','prompt','max_score'])),$fresh['questions']);
@@ -63,7 +64,9 @@ class StudentTasks {
             $payload['origin']='student';
             $answer=$answer?$intake->revise($a,$user->id,$answer->id,$expected,'Revisi dikirim siswa.',$payload):$intake->create($a,$user->id,$p->id,$question,$key,$payload);
             $revision=$answer->fresh()->latestRevision; $stored=$revision->photo_path;
-            return StudentSubmission::create(['student_task_id'=>$task->id,'participant_id'=>$p->id,'question_id'=>$question,'answer_revision_id'=>$revision->id,'created_by'=>$user->id,'creation_key'=>$key,'request_hash'=>$hash]);
+            $receipt=StudentSubmission::create(['student_task_id'=>$task->id,'participant_id'=>$p->id,'question_id'=>$question,'answer_revision_id'=>$revision->id,'created_by'=>$user->id,'creation_key'=>$key,'request_hash'=>$hash]);
+            app(LearningPaths::class)->recordTaskCompletion($task,$p);
+            return $receipt;
         }); } catch(\Throwable $e) { if($stored) Storage::disk('answers')->delete($stored); throw $e; }
     }
     private function fail(string $text): never { throw ValidationException::withMessages(['task'=>$text]); }

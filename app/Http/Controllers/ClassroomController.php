@@ -32,7 +32,10 @@ class ClassroomController
     public function update(Request $request, Classroom $classroom)
     {
         Gate::authorize('update', $classroom);
-        $classroom->update($request->validate($this->rules()));
+        $v=$request->validate($this->rules());
+        if($classroom->grade!==(int)$v['grade'] && \App\Models\LearningPath::where('classroom_id',$classroom->id)->exists())
+            throw \Illuminate\Validation\ValidationException::withMessages(['grade'=>'Jenjang kelas tidak dapat diubah setelah jalur belajar dibuat.']);
+        $classroom->update($v);
         return back()->with('status', 'Kelas disimpan.');
     }
 

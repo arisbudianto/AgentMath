@@ -3,10 +3,11 @@
 @can('learn')
 <div class="student-page student-dashboard">
     <section class="student-hero">
-        <div><p class="student-kicker">RUANG BELAJARKU</p><h1>Halo, {{ auth()->user()->name }}! <span aria-hidden="true">✦</span></h1><p>Ayo lanjutkan petualangan angkamu. Pilih tugas dari guru atau lihat kembali jawabanmu.</p><a class="student-cta" href="{{ route('student.tasks.index') }}">Lihat tugas saya <span aria-hidden="true">→</span></a></div>
+        <div><p class="student-kicker">RUANG BELAJARKU</p><h1>Halo, {{ auth()->user()->name }}! <span aria-hidden="true">✦</span></h1><p>Ayo lanjutkan petualangan angkamu. Pilih tugas dari guru atau lihat kembali jawabanmu.</p><a class="student-cta" href="{{ (int)(auth()->user()->studentProfile?->participant?->classroom?->grade ?? 0)===1 ? route('learning.index') : route('student.tasks.index') }}">{{ (int)(auth()->user()->studentProfile?->participant?->classroom?->grade ?? 0)===1 ? 'Lanjutkan jalur belajar' : 'Lihat tugas saya' }} <span aria-hidden="true">→</span></a></div>
         <div class="student-hero-art" aria-hidden="true"><span class="student-art-sun">✳</span><span class="student-art-number">1 2 3</span><span class="student-art-shape">●</span></div>
     </section>
     <div class="student-home-grid">
+        @if((int)(auth()->user()->studentProfile?->participant?->classroom?->grade ?? 0)===1)<a class="student-home-card" href="{{ route('learning.index') }}"><span class="student-home-icon mint" aria-hidden="true">➜</span><span class="student-kicker">LANGKAH DEMI LANGKAH</span><strong>Jalur belajar</strong><span>Pretest, delapan materi buku, lalu post-test secara berurutan.</span><b>Lanjutkan perjalanan <span aria-hidden="true">→</span></b></a>@endif
         <a class="student-home-card" href="{{ route('student.tasks.index') }}"><span class="student-home-icon" aria-hidden="true">✎</span><span class="student-kicker">MULAI DI SINI</span><strong>Tugas dari guru</strong><span>Lihat soal yang sedang terbuka dan kirim jawabanmu.</span><b>Lihat tugas <span aria-hidden="true">→</span></b></a>
         <a class="student-home-card" href="{{ route('student.index') }}"><span class="student-home-icon mint" aria-hidden="true">☆</span><span class="student-kicker">CERITA BELAJARKU</span><strong>Jawaban &amp; nilai</strong><span>Baca kembali jawabanmu dan nilai yang sudah diterbitkan guru.</span><b>Buka ruang siswa <span aria-hidden="true">→</span></b></a>
     </div>

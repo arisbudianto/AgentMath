@@ -37,6 +37,9 @@ class StudentTaskController {
     public function submit(Request $request,int $task,int $question,StudentTasks $tasks) {
         $v=$request->validate(['creation_key'=>'required|uuid','expected_version'=>'required|integer|min:0','content_type'=>'required|in:text,photo','answer_text'=>'required_if:content_type,text|nullable|string|max:20000','photo'=>'required_if:content_type,photo|nullable|file|max:5120','confirmation'=>'accepted']);
         $tasks->submit($request->user(),$task,$question,$v['creation_key'],(int)$v['expected_version'],['content_type'=>$v['content_type'],'answer_text'=>$v['answer_text'] ?? '','photo'=>$request->file('photo')],true);
-        return redirect()->route('student.index')->with('status','Jawaban terkirim. Foto perlu diperiksa transkripsinya oleh pengajar; belum ada nilai otomatis.');
+        $participant=$tasks->participant($request->user());
+        $path=app(\App\Services\LearningPaths::class)->forParticipant($participant);
+        $message=($v['content_type']==='photo')?'Jawaban terkirim. Foto perlu diperiksa transkripsinya oleh pengajar; belum ada nilai otomatis.':'Jawaban terkirim. Guru akan memeriksa sebelum nilai diterbitkan.';
+        return redirect()->route($path?'learning.index':'student.index')->with('status',$message);
     }
 }
