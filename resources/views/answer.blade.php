@@ -3,7 +3,7 @@
 <a href="{{ route('answers.index',$assessment) }}">← Semua jawaban</a><p class="eyebrow">{{ $assessment->title }}</p><h1>{{ $answer->participant->code }} · Soal {{ $answer->question->number }}</h1>
 <section class="card"><h2>Jawaban terkini · revisi {{ $answer->current_version }}</h2>@include('answer-revision-content',['revision'=>$answer->latestRevision])</section>
 <section class="card"><h2>Keputusan nilai guru</h2>
-@if($approved)<p><strong>{{ $approved->total_score }}</strong> · versi {{ $approved->version }} · {{ $approvedCurrent?'Disahkan untuk dasar terkini':'Keputusan historis; dasar jawaban atau rubrik berubah' }}</p><p>{{ $approved->reason }}</p><a href="{{ route('reviews.show',[$assessment,$approved->grading_run_id]) }}">Lihat keputusan dan riwayat</a>
+@if($approved)<p><strong>{{ $approved->total_score }}</strong> · versi {{ $approved->version }} · {{ $approvedCurrent?'Disahkan untuk dasar terkini':'Keputusan historis; dasar jawaban atau rubrik berubah' }}</p><p>{{ $approved->reason }}</p><a href="{{ route('reviews.show',[$assessment,$approved->grading_run_id]) }}">Lihat keputusan dan riwayat</a> · <a href="{{ route('diagnosis.show',[$assessment,$answer]) }}">Diagnosis kesalahan</a>
 @else<p>Belum ada nilai yang disahkan guru.</p>@endif
 @foreach($completedRuns as $completed)<p><a href="{{ route('reviews.show',[$assessment,$completed]) }}">Periksa usulan proses #{{ $completed->id }}</a></p>@endforeach
 </section>

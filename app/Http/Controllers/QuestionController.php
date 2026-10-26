@@ -12,7 +12,7 @@ class QuestionController
     public function store(Request $request, Assessment $assessment)
     {
         Gate::authorize('update', $assessment);
-        $assessment->questions()->create($request->validate($this->rules($assessment)));
+        $assessment->questions()->create($this->validated($request, $assessment));
         return back()->with('status', 'Soal ditambahkan.');
     }
 
@@ -26,7 +26,7 @@ class QuestionController
     {
         Gate::authorize('update', $assessment);
         $record = $assessment->questions()->findOrFail($question);
-        $record->update($request->validate($this->rules($assessment, $record->id)));
+        $record->update($this->validated($request, $assessment, $record->id));
         return redirect()->route('assessments.show', $assessment)->with('status', 'Soal disimpan.');
     }
 
@@ -62,6 +62,13 @@ class QuestionController
         return response($csv, 200, ['Content-Type' => 'text/csv; charset=UTF-8', 'Content-Disposition' => 'attachment; filename="'.$name.'"']);
     }
 
+    private function validated(Request $request, Assessment $assessment, ?int $ignore = null): array
+    {
+        $data = $request->validate($this->rules($assessment, $ignore));
+        $data['competency_id'] = $data['competency_id'] ?? null;
+        return $data;
+    }
+
     private function rules(Assessment $assessment, ?int $ignore = null): array
     {
         return [
@@ -70,6 +77,7 @@ class QuestionController
             'answer_key' => 'required|string|max:20000',
             'scoring_guidelines' => 'required|string|max:20000',
             'max_score' => 'required|numeric|decimal:0,2|gt:0|lte:10000',
+            'competency_id' => ['nullable', Rule::exists('competencies', 'id')->where('owner_id', $assessment->owner_id)],
         ];
     }
 }

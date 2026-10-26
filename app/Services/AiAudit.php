@@ -6,7 +6,7 @@ use Illuminate\Http\Client\Response;
 class AiAudit {
     private array $contexts=[];
     public function within(Assessment $assessment,string $kind,int $source,string $correlation,callable $operation): mixed {
-        if(!in_array($kind,['rubric','transcription','grading','baseline'],true)) throw new \LogicException('Jenis audit tidak dikenal.');
+        if(!in_array($kind,['rubric','transcription','grading','baseline','diagnosis'],true)) throw new \LogicException('Jenis audit tidak dikenal.');
         $this->contexts[]=['assessment_id'=>$assessment->id,'kind'=>$kind,'source_id'=>$source,'correlation_id'=>$correlation,'calls'=>[]];
         $outcome='rejected';
         try { $result=$operation(); $outcome='validated'; return $result; }

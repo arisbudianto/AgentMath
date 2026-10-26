@@ -13,4 +13,6 @@ class Answer extends Model
     public function participant() { return $this->belongsTo(Participant::class); }
     public function revisions() { return $this->hasMany(AnswerRevision::class)->orderByDesc('version'); }
     public function latestRevision() { return $this->hasOne(AnswerRevision::class)->ofMany('version','max'); }
+    public function gradeReviews() { return $this->hasMany(GradeReview::class); }
+    public function diagnoses() { return $this->hasMany(AnswerDiagnosis::class)->orderByDesc('version'); }
 }
