@@ -213,4 +213,44 @@ class AssessmentPackageTest extends TestCase
         $this->actingAs($a)->delete('/assessments/'.$foreign->id)->assertForbidden();
         $this->assertDatabaseHas('assessments', ['id' => $foreign->id]);
     }
+
+    public function test_teacher_can_delete_a_question_then_delete_the_now_empty_assessment(): void
+    {
+        $owner = $this->teacher();
+        $assessment = $owner->assessments()->create(['title' => 'Latihan Bab 1']);
+        $question = $assessment->questions()->create($this->questionData());
+
+        $this->actingAs($owner)
+            ->delete('/assessments/'.$assessment->id.'/questions/'.$question->id)
+            ->assertRedirect('/assessments/'.$assessment->id);
+        $this->assertDatabaseMissing('questions', ['id' => $question->id]);
+
+        // Assessment had only that one question, so it can now be deleted too.
+        $this->delete('/assessments/'.$assessment->id)->assertRedirect('/assessments');
+        $this->assertDatabaseMissing('assessments', ['id' => $assessment->id]);
+    }
+
+    public function test_question_with_a_rubric_cannot_be_deleted(): void
+    {
+        $owner = $this->teacher();
+        $assessment = $owner->assessments()->create(['title' => 'Latihan Bab 1']);
+        $question = $assessment->questions()->create($this->questionData());
+        $question->setRelation('assessment', $assessment);
+        app(\App\Services\RubricWorkflow::class)->create($question, $owner->id, (string) \Illuminate\Support\Str::uuid(), 'manual');
+
+        $this->actingAs($owner)
+            ->delete('/assessments/'.$assessment->id.'/questions/'.$question->id)
+            ->assertRedirect('/assessments/'.$assessment->id)
+            ->assertSessionHasErrors('question');
+        $this->assertDatabaseHas('questions', ['id' => $question->id]);
+    }
+
+    public function test_teacher_cannot_delete_another_teachers_question(): void
+    {
+        $a = $this->teacher(); $b = $this->teacher();
+        $assessment = $b->assessments()->create(['title' => 'Bukan milikku']);
+        $question = $assessment->questions()->create($this->questionData());
+        $this->actingAs($a)->delete('/assessments/'.$assessment->id.'/questions/'.$question->id)->assertForbidden();
+        $this->assertDatabaseHas('questions', ['id' => $question->id]);
+    }
 }

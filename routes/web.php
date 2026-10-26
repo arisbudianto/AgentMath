@@ -97,6 +97,7 @@ Route::middleware(['auth', 'active'])->group(function () {
         Route::post('/assessments/{assessment}/questions', [\App\Http\Controllers\QuestionController::class, 'store'])->name('questions.store');
         Route::get('/assessments/{assessment}/questions/{question}/edit', [\App\Http\Controllers\QuestionController::class, 'edit'])->name('questions.edit');
         Route::patch('/assessments/{assessment}/questions/{question}', [\App\Http\Controllers\QuestionController::class, 'update'])->name('questions.update');
+        Route::delete('/assessments/{assessment}/questions/{question}', [\App\Http\Controllers\QuestionController::class, 'destroy'])->middleware('throttle:12,1')->name('questions.destroy');
         Route::get('/assessments', [AssessmentController::class, 'index'])->name('assessments.index');
         Route::post('/assessments', [AssessmentController::class, 'store'])->name('assessments.store');
         Route::get('/assessments/{assessment}', [AssessmentController::class, 'show'])->name('assessments.show');

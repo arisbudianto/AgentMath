@@ -30,6 +30,25 @@ class QuestionController
         return redirect()->route('assessments.show', $assessment)->with('status', 'Soal disimpan.');
     }
 
+    public function destroy(Request $request, Assessment $assessment, int $question)
+    {
+        Gate::authorize('update', $assessment);
+        $record = $assessment->questions()->findOrFail($question);
+        try {
+            \Illuminate\Support\Facades\DB::transaction(function () use ($assessment, $question) {
+                $assessment->questions()->whereKey($question)->lockForUpdate()->firstOrFail()->delete();
+            });
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ((string) $e->getCode() === '23000') {
+                return redirect()->route('assessments.show', $assessment)->withErrors([
+                    'question' => 'Soal nomor '.$record->number.' tidak dapat dihapus karena sudah punya jawaban, rubrik, hasil penilaian, atau dipakai di tugas siswa. Hapus/lepaskan data tersebut terlebih dahulu.',
+                ]);
+            }
+            throw $e;
+        }
+        return redirect()->route('assessments.show', $assessment)->with('status', 'Soal nomor '.$record->number.' dihapus.');
+    }
+
     private function rules(Assessment $assessment, ?int $ignore = null): array
     {
         return [
