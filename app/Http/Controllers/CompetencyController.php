@@ -20,10 +20,17 @@ class CompetencyController
     public function show(Request $request, Competency $competency)
     {
         Gate::authorize('view', $competency);
+        $practice = app(PracticeRecommendation::class);
+        $students = app(CompetencyDashboard::class)->studentsFor($request->user(), $competency);
+        foreach ($students as &$row) {
+            $row['weak'] = $row['percent'] !== null && $row['percent'] < PracticeRecommendation::WEAK_THRESHOLD;
+            $row['personalized'] = $row['weak'] ? $practice->forStudent($request->user(), $competency, $row['participant_id']) : null;
+        }
+        unset($row);
         return view('competency', [
             'competency' => $competency,
-            'students' => app(CompetencyDashboard::class)->studentsFor($request->user(), $competency),
-            'recommendations' => app(PracticeRecommendation::class)->forCompetency($request->user(), $competency),
+            'students' => $students,
+            'recommendations' => $practice->forCompetency($request->user(), $competency),
         ]);
     }
 
