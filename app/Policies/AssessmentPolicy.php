@@ -8,4 +8,5 @@ class AssessmentPolicy
         return $user->is_active && $user->role === 'teacher' && $user->id === $assessment->owner_id;
     }
     public function update(User $user, Assessment $assessment): bool { return $this->view($user, $assessment); }
+    public function delete(User $user, Assessment $assessment): bool { return $this->view($user, $assessment); }
 }

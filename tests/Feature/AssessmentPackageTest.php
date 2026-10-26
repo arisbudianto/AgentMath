@@ -189,4 +189,28 @@ class AssessmentPackageTest extends TestCase
         }
         $this->assertSame(2, Question::where('number', 1)->count());
     }
+
+    public function test_teacher_can_delete_an_empty_assessment_but_not_one_with_questions(): void
+    {
+        $owner = $this->teacher();
+        $empty = $owner->assessments()->create(['title' => 'Latihan Bab 2']);
+        $withQuestion = $owner->assessments()->create(['title' => 'Latihan Bab 1']);
+        $withQuestion->questions()->create($this->questionData());
+
+        $this->actingAs($owner)->delete('/assessments/'.$empty->id)->assertRedirect('/assessments');
+        $this->assertDatabaseMissing('assessments', ['id' => $empty->id]);
+
+        $this->delete('/assessments/'.$withQuestion->id)
+            ->assertRedirect('/assessments')
+            ->assertSessionHasErrors('assessment');
+        $this->assertDatabaseHas('assessments', ['id' => $withQuestion->id]);
+    }
+
+    public function test_teacher_cannot_delete_another_teachers_assessment(): void
+    {
+        $a = $this->teacher(); $b = $this->teacher();
+        $foreign = $b->assessments()->create(['title' => 'Bukan milikku']);
+        $this->actingAs($a)->delete('/assessments/'.$foreign->id)->assertForbidden();
+        $this->assertDatabaseHas('assessments', ['id' => $foreign->id]);
+    }
 }

@@ -52,6 +52,25 @@ class AssessmentController
         return back()->with('status', 'Asesmen disimpan.');
     }
 
+    public function destroy(Request $request, Assessment $assessment)
+    {
+        Gate::authorize('delete', $assessment);
+        try {
+            \Illuminate\Support\Facades\DB::transaction(function () use ($assessment) {
+                $current = Assessment::whereKey($assessment->id)->lockForUpdate()->firstOrFail();
+                $current->delete();
+            });
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ((string) $e->getCode() === '23000') {
+                return redirect()->route('assessments.index')->withErrors([
+                    'assessment' => 'Asesmen tidak dapat dihapus karena sudah memiliki soal, jawaban, hasil penilaian, atau dipakai pada jalur belajar. Hapus/lepaskan data tersebut terlebih dahulu.',
+                ]);
+            }
+            throw $e;
+        }
+        return redirect()->route('assessments.index')->with('status', 'Asesmen "'.$assessment->title.'" dihapus.');
+    }
+
     private function rules(Request $request): array
     {
         return [

@@ -101,6 +101,7 @@ Route::middleware(['auth', 'active'])->group(function () {
         Route::post('/assessments', [AssessmentController::class, 'store'])->name('assessments.store');
         Route::get('/assessments/{assessment}', [AssessmentController::class, 'show'])->name('assessments.show');
         Route::patch('/assessments/{assessment}', [AssessmentController::class, 'update'])->name('assessments.update');
+        Route::delete('/assessments/{assessment}', [AssessmentController::class, 'destroy'])->middleware('throttle:12,1')->name('assessments.destroy');
     });
     Route::middleware('can:manage-users')->prefix('admin')->group(function () {
         Route::get('/users', [UserController::class, 'index'])->name('users.index');
