@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Competency;
-use App\Services\CompetencyDashboard;
+use App\Services\{CompetencyDashboard, PracticeRecommendation};
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
@@ -20,7 +20,11 @@ class CompetencyController
     public function show(Request $request, Competency $competency)
     {
         Gate::authorize('view', $competency);
-        return view('competency', ['competency' => $competency, 'students' => app(CompetencyDashboard::class)->studentsFor($request->user(), $competency)]);
+        return view('competency', [
+            'competency' => $competency,
+            'students' => app(CompetencyDashboard::class)->studentsFor($request->user(), $competency),
+            'recommendations' => app(PracticeRecommendation::class)->forCompetency($request->user(), $competency),
+        ]);
     }
 
     public function store(Request $request)
