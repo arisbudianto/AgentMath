@@ -84,7 +84,17 @@ EXCLUDES=(
     --exclude=public/.well-known
 )
 
-RSYNC_FLAGS=(-a --delete --itemize-changes "${EXCLUDES[@]}")
+RSYNC_FLAGS=(-rlt --delete --itemize-changes "${EXCLUDES[@]}")
+# -rlt (recursive, symlinks, times), deliberately NOT -a: full "archive" mode also
+# copies permissions/owner/group from the source checkout, which would overwrite
+# production's hardened permissions. Confirmed by diffing an actual deploy:
+#   source  public/: drwxr-xr-x speakver:speakver
+#   prod    public/: drwxr-x--- speakver:nobody
+# The nobody group on prod's public/ is deliberate (PHP-FPM/the web server runs as
+# nobody and needs read+execute there); syncing -p/-o/-g would drop that to "other"
+# permissions (none) and take the site down. New files still get sane defaults from
+# the receiving umask; existing files/dirs keep whatever permissions are already on
+# the server.
 if [[ $dry_run -eq 1 ]]; then
     RSYNC_FLAGS+=(--dry-run)
     echo "DRY RUN — no files will be changed. Review the list below, then rerun without --dry-run."
