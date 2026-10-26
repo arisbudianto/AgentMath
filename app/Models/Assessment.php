@@ -9,6 +9,7 @@ class Assessment extends Model
     public function questions() { return $this->hasMany(Question::class)->orderBy('number'); }
     public function answers() { return $this->hasMany(Answer::class); }
     public function answerImports() { return $this->hasMany(AnswerImportBatch::class); }
+    public function questionImports() { return $this->hasMany(QuestionImportBatch::class); }
 
     /** Readiness is derived from current data, not a stale saved status. */
     public function packageIssues(): array

@@ -31,6 +31,7 @@ class AssessmentController
             'assessment' => $assessment,
             'classrooms' => $request->user()->classrooms()->orderBy('name')->get(),
             'issues' => $assessment->packageIssues(),
+            'questionImports' => $assessment->questionImports()->latest()->limit(5)->get(['id', 'status']),
         ]);
     }
     public function update(Request $request, Assessment $assessment)

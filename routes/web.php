@@ -98,6 +98,12 @@ Route::middleware(['auth', 'active'])->group(function () {
         Route::get('/assessments/{assessment}/questions/{question}/edit', [\App\Http\Controllers\QuestionController::class, 'edit'])->name('questions.edit');
         Route::patch('/assessments/{assessment}/questions/{question}', [\App\Http\Controllers\QuestionController::class, 'update'])->name('questions.update');
         Route::delete('/assessments/{assessment}/questions/{question}', [\App\Http\Controllers\QuestionController::class, 'destroy'])->middleware('throttle:12,1')->name('questions.destroy');
+        Route::get('/assessments/{assessment}/questions/export', [\App\Http\Controllers\QuestionController::class, 'export'])->name('questions.export');
+        Route::get('/assessments/{assessment}/question-imports/template', [\App\Http\Controllers\QuestionImportController::class,'template'])->name('question-imports.template');
+        Route::post('/assessments/{assessment}/question-imports', [\App\Http\Controllers\QuestionImportController::class,'preview'])->middleware('throttle:5,1')->name('question-imports.preview');
+        Route::get('/assessments/{assessment}/question-imports/{batch}', [\App\Http\Controllers\QuestionImportController::class,'show'])->name('question-imports.show');
+        Route::post('/assessments/{assessment}/question-imports/{batch}/commit', [\App\Http\Controllers\QuestionImportController::class,'commit'])->name('question-imports.commit');
+        Route::post('/assessments/{assessment}/question-imports/{batch}/cancel', [\App\Http\Controllers\QuestionImportController::class,'cancel'])->name('question-imports.cancel');
         Route::get('/assessments', [AssessmentController::class, 'index'])->name('assessments.index');
         Route::post('/assessments', [AssessmentController::class, 'store'])->name('assessments.store');
         Route::get('/assessments/{assessment}', [AssessmentController::class, 'show'])->name('assessments.show');

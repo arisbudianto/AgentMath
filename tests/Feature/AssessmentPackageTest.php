@@ -253,4 +253,63 @@ class AssessmentPackageTest extends TestCase
         $this->actingAs($a)->delete('/assessments/'.$assessment->id.'/questions/'.$question->id)->assertForbidden();
         $this->assertDatabaseHas('questions', ['id' => $question->id]);
     }
+
+    private function questionCsv(string $rows): string
+    {
+        return "number,prompt,answer_key,scoring_guidelines,max_score\r\n".$rows;
+    }
+
+    public function test_teacher_can_export_questions_to_csv(): void
+    {
+        $owner = $this->teacher();
+        $assessment = $owner->assessments()->create(['title' => 'Latihan Bab 1']);
+        $assessment->questions()->create($this->questionData());
+        $response = $this->actingAs($owner)->get('/assessments/'.$assessment->id.'/questions/export');
+        $response->assertOk();
+        $response->assertHeader('content-type', 'text/csv; charset=UTF-8');
+        $this->assertStringContainsString('Hitung 1/2 + 1/4.', $response->getContent());
+    }
+
+    public function test_teacher_can_import_questions_from_csv(): void
+    {
+        $owner = $this->teacher();
+        $assessment = $owner->assessments()->create(['title' => 'Latihan Bab 1']);
+        $key = (string) \Illuminate\Support\Str::uuid();
+        $csv = $this->questionCsv("5,\"Hitung 2/3 + 1/6.\",\"5/6\",\"Skor penuh untuk 5/6.\",3\r\n6,\"Hitung 1/2 - 1/4.\",\"1/4\",\"Skor penuh untuk 1/4.\",3\r\n");
+        $this->actingAs($owner)->post('/assessments/'.$assessment->id.'/question-imports', [
+            'creation_key' => $key,
+            'csv_file' => \Illuminate\Http\UploadedFile::fake()->createWithContent('soal.csv', $csv),
+        ])->assertRedirect();
+        $batch = $assessment->questionImports()->firstOrFail();
+        $this->assertSame(0, $assessment->questions()->count());
+        $this->get('/assessments/'.$assessment->id.'/question-imports/'.$batch->id)->assertOk()->assertSee('Konfirmasi impor 2 soal');
+        $path = '/assessments/'.$assessment->id.'/question-imports/'.$batch->id.'/commit';
+        $this->post($path, [])->assertSessionHasErrors('confirmation');
+        $this->post($path, ['confirmation' => 1])->assertRedirect();
+        $this->post($path, ['confirmation' => 1])->assertRedirect();
+        $this->assertSame(2, $assessment->questions()->count());
+        $this->assertDatabaseHas('questions', ['assessment_id' => $assessment->id, 'number' => 5, 'answer_key' => '5/6']);
+        $this->assertSame(2, $batch->fresh()->imported_count);
+        $this->assertNull($batch->fresh()->rows);
+    }
+
+    public function test_question_import_rejects_numbers_already_on_the_assessment(): void
+    {
+        $owner = $this->teacher();
+        $assessment = $owner->assessments()->create(['title' => 'Latihan Bab 1']);
+        $assessment->questions()->create($this->questionData(['number' => 1]));
+        $batch = app(\App\Services\QuestionImport::class)->preview($assessment, $owner->id, (string) \Illuminate\Support\Str::uuid(), $this->questionCsv("1,\"Soal dobel\",\"Kunci\",\"Pedoman\",10\r\n"));
+        $this->assertNotEmpty($batch->rows[0]['errors']);
+        $this->actingAs($owner)->post('/assessments/'.$assessment->id.'/question-imports/'.$batch->id.'/commit', ['confirmation' => 1])->assertSessionHasErrors('import');
+        $this->assertSame(1, $assessment->questions()->count());
+    }
+
+    public function test_question_import_cannot_be_committed_by_another_teacher(): void
+    {
+        $owner = $this->teacher();
+        $other = $this->teacher();
+        $assessment = $owner->assessments()->create(['title' => 'Bukan milikku']);
+        $batch = app(\App\Services\QuestionImport::class)->preview($assessment, $owner->id, (string) \Illuminate\Support\Str::uuid(), $this->questionCsv("1,\"Soal\",\"Kunci\",\"Pedoman\",10\r\n"));
+        $this->actingAs($other)->post('/assessments/'.$assessment->id.'/question-imports/'.$batch->id.'/commit', ['confirmation' => 1])->assertForbidden();
+    }
 }
