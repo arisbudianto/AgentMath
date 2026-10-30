@@ -1,0 +1,34 @@
+name: cPanel SSH reachability diagnostic
+
+on:
+  push:
+    branches:
+      - chore/ssh-connectivity-diagnostic-20261030
+    paths:
+      - .github/workflows/ssh-reachability.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  tcp-reachability:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Test TCP connectivity without authentication
+        shell: bash
+        run: |
+          set -u
+          host=veleta.id.rapidplex.com
+          echo "Checking TCP reachability to the cPanel host. No SSH credentials are used."
+          for port in 22 2222; do
+            echo "::group::Port $port"
+            if timeout 8 bash -c 'exec 3<>/dev/tcp/"$1"/"$2"' _ "$host" "$port" 2>/dev/null; then
+              echo "PORT_$port=REACHABLE"
+            else
+              echo "PORT_$port=NOT_REACHABLE_FROM_RUNNER"
+            fi
+            echo "::endgroup::"
+          done
+          echo "Diagnostic completed. Reachability does not prove SSH authentication."
