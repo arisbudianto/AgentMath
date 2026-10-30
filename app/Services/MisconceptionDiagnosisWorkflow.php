@@ -63,6 +63,10 @@ class MisconceptionDiagnosisWorkflow
             if ($draft->status !== 'draft') $this->fail('Diagnosis ini sudah diputuskan. Buat diagnosis baru untuk keputusan berbeda.');
             $latest = $current->diagnoses()->first();
             if (!$latest || $latest->version !== $expected || $latest->id !== $draft->id) $this->fail('Diagnosis berubah di tab lain. Muat ulang sebelum menyimpan.');
+            $latestApproved = $current->gradeReviews()->where('status', 'approved')->orderByDesc('version')->first();
+            if ($action === 'approve' && (!$latestApproved || $latestApproved->id !== $draft->grade_review_id)) {
+                $this->fail('Keputusan nilai berubah sejak diagnosis dibuat. Buat diagnosis baru sebelum menyetujui.');
+            }
             $weak = $this->eligibleCriteria($current);
             $finalItems = $action === 'approve' && !$items ? $draft->items : $this->validateItems($items ?: $draft->items, $weak);
             return $current->diagnoses()->create([
