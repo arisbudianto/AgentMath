@@ -90,6 +90,23 @@ class DiagnosisTest extends TestCase {
         foreach(['update','delete'] as $method) { try { $method==='update'?$approved->update(['status'=>'rejected']):$approved->delete(); $this->fail('Mutable diagnosis'); } catch(\LogicException) { $this->assertTrue(true); } }
         $this->fails(fn()=>$w->decide($f[2]->fresh(),$draft->id,1,'reject',$f[0]->id));
     }
+    public function test_cannot_approve_diagnosis_after_new_grade_review_is_approved(): void {
+        $f=$this->fixture(); $this->approvedReview($f);
+        $this->aiFake([['criterion_id'=>'C2','category'=>'perhitungan','explanation'=>'Salah hitung.','recommended_action'=>'Latihan tambahan.']]);
+        $draft=app(MisconceptionDiagnosisWorkflow::class)->generate($f[2]->fresh(),$f[0]->id,(string)Str::uuid());
+
+        $rows=[['criterion_id'=>'C1','score'=>'1.00','reason'=>''],['criterion_id'=>'C2','score'=>'0.00','reason'=>'Checked again.']];
+        $reviews=app(GradeReviewWorkflow::class);
+        $reviews->save($f[1],$f[0]->id,$f[4]->id,(string)Str::uuid(),2,'draft',$rows,'Rechecked the answer.');
+        $reviews->save($f[1],$f[0]->id,$f[4]->id,(string)Str::uuid(),3,'approve',[],'',true);
+
+        $this->fails(fn()=>app(MisconceptionDiagnosisWorkflow::class)->decide($f[2]->fresh(),$draft->id,$draft->version,'approve',$f[0]->id));
+        $this->assertSame(1,AnswerDiagnosis::count());
+        $this->assertSame('draft',$draft->fresh()->status);
+        // Rejection remains possible to close an obsolete draft without publishing it.
+        $rejected=app(MisconceptionDiagnosisWorkflow::class)->decide($f[2]->fresh(),$draft->id,$draft->version,'reject',$f[0]->id);
+        $this->assertSame('rejected',$rejected->status);
+    }
     public function test_decide_reject_with_teacher_edited_items(): void {
         $f=$this->fixture(); $this->approvedReview($f);
         $this->aiFake([['criterion_id'=>'C2','category'=>'perhitungan','explanation'=>'Salah hitung.','recommended_action'=>'Latihan tambahan.']]);
