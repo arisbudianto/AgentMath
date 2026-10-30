@@ -36,15 +36,24 @@ fi
 
 # Must use same OS lock as the AgentMath-M04 worker. Keep FD open until app is up.
 lock_file="${AGENTMATH_DEPLOY_LOCK:-$HOME/.agentmath-grading.lock}"
+pause_file="$HOME/.agentmath-worker-paused"
+cron_line="$(crontab -l 2>/dev/null | grep -F "AgentMath-M04" || true)"
+if [[ "$cron_line" != *"$pause_file"* || "$cron_line" != *" ! -e "* ]]; then
+  echo "BLOCKED: cron worker must test absence of $pause_file before running" >&2
+  exit 1
+fi
+[[ ! -e "$pause_file" ]] || { echo "Worker already paused" >&2; exit 1; }
+( set -C; : > "$pause_file" ) || exit 1
 exec 9>"$lock_file"
-flock -w 60 9 || { echo "Grading worker/deployment lock unavailable" >&2; exit 1; }
+flock -w 60 9 || { rm -f "$pause_file"; echo "Grading worker/deployment lock unavailable" >&2; exit 1; }
 cd "$target_dir"
 maintenance=0
 cleanup() {
   status=$?
   trap - EXIT
+  if [[ "$status" != 0 && "$maintenance" == 0 ]]; then rm -f "$pause_file"; fi
   if [[ "$maintenance" == 1 ]]; then
-    echo "Deployment interrupted; application intentionally left in maintenance. Worker lock releases on exit." >&2
+    echo "Deployment interrupted; application intentionally left in maintenance. Pause marker remains to block future worker cron runs." >&2
     echo "Restore approved code/dependencies, verify, then run artisan up manually after review." >&2
   fi
   exit "$status"
@@ -62,5 +71,6 @@ php artisan view:cache
 php artisan route:list --except-vendor >/dev/null
 php artisan up
 maintenance=0
+rm -f "$pause_file"
 echo "DEPLOY_COMMANDS_PASS commit=$expected_sha"
 echo "HTTP identity, ownership smoke, worker and document root still require external verification."
