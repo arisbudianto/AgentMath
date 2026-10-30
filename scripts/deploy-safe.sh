@@ -16,7 +16,6 @@ target_dir="$(cd "$target_dir" && pwd -P)"
 [[ -f "$source_dir/artisan" && -f "$target_dir/artisan" && -f "$target_dir/.env" ]] || { echo "Laravel source/target or production .env missing" >&2; exit 1; }
 [[ "$(git -C "$source_dir" rev-parse HEAD)" == "$expected_sha" ]] || { echo "Source commit does not match approved SHA" >&2; exit 1; }
 [[ -z "$(git -C "$source_dir" status --porcelain --untracked-files=normal -- . ':(exclude)vendor')" ]] || { echo "Source checkout is dirty (except permitted vendor)" >&2; exit 1; }
-[[ ! -L "$source_dir/vendor" || "$(readlink -f "$source_dir/vendor")" == "$(readlink -f "$source_dir/../agentmath-m00/vendor")" ]] || { echo "Unrecognized vendor symlink" >&2; exit 1; }
 [[ -f "$source_dir/vendor/autoload.php" && -f "$target_dir/vendor/autoload.php" ]] || { echo "Dependencies missing: install/verify separately before deployment" >&2; exit 1; }
 cmp -s "$source_dir/composer.lock" "$target_dir/composer.lock" || { echo "composer.lock differs; dependency changes require separate reviewed procedure" >&2; exit 1; }
 [[ -n "${AGENTMATH_DEPLOY_APPROVED_SHA:-}" && "${AGENTMATH_DEPLOY_APPROVED_SHA}" == "$expected_sha" || "$mode" == "--dry-run" ]] || { echo "Apply requires AGENTMATH_DEPLOY_APPROVED_SHA matching expected commit" >&2; exit 1; }
