@@ -27,3 +27,15 @@ jobs:
       - name: Ensure no automatic migrations or git pulls
         run: |
           ! grep -Eq '^[[:space:]]*(php artisan migrate|git pull|composer install)' scripts/deploy-safe.sh
+      - name: Assert failure marker and maintenance ordering
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          s = Path("scripts/deploy-safe.sh").read_text()
+          assert s.index('maintenance=1\nphp artisan down') < s.index('rsync "${rsync_flags[@]}" "$source_dir/" "$target_dir/"', s.index('maintenance=1\nphp artisan down'))
+          assert 'Pause marker remains to block future worker cron runs.' in s
+          assert 'cron_line=' in s
+          assert 'rm -f "$pause_file"' in s
+          assert 'flock -w 60 9' in s
+          print("Static fail-closed assertions PASS")
+          PY
