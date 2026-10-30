@@ -4,11 +4,11 @@ on:
     paths:
       - 'scripts/deploy-safe.sh'
       - 'scripts/test-deploy-safe.sh'
-      - 'scripts/test-deploy-safe.sh'
       - '.github/workflows/deploy-safe-check.yml'
   pull_request:
     paths:
       - 'scripts/deploy-safe.sh'
+      - 'scripts/test-deploy-safe.sh'
       - '.github/workflows/deploy-safe-check.yml'
   workflow_dispatch:
 permissions:
