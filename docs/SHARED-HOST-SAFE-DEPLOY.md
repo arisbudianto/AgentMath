@@ -38,3 +38,13 @@ If the script fails after entering maintenance, it intentionally leaves the appl
 - It does not verify authenticated flows, HTTP identity or worker success.
 - It does not handle dependency upgrades or migrations.
 - The cPanel Git Deploy Manager remains unverified and should not be enabled automatically.
+
+## Controlled cPanel cron change, not yet approved or applied
+
+The current server cron was restored from a known-good backup after an earlier shell-paste error. Do **not** pipe `crontab -l` into `crontab -`, do not paste multiline terminal transformations, and do not run an untested cron installer. Prefer cPanel **Cron Jobs** UI: edit only the existing AgentMath-M04 entry, retain its every-seven-minutes schedule and exact worker/log paths, and prefix its command with `test ! -e /home/speakver/.agentmath-worker-paused && `. Confirm the resulting command still contains `/bin/sh -c` with a space. Take a fresh full crontab backup before editing. Check all five jobs remain present and compare them against the pre-change backup. If cPanel cannot edit an existing entry safely, stop rather than delete/recreate other jobs.
+
+A matching cron string alone does not prove the worker runs: check its next scheduled execution, the worker log, and grading behavior. Never activate the new deploy script before the guard is confirmed on the server.
+
+## Release approval boundary
+
+A green isolated GitHub test does not authorize production deployment. Before a production release, confirm: the exact target SHA passed both workflows; production document root and checkout identity; current backup and independent restore evidence; database migrations/dependency compatibility; verified cron guard; dry-run diff; rollback readiness; and explicit release approval. Do not merge or run `--apply` without those gates.
