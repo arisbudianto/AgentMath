@@ -63,8 +63,8 @@ trap 'exit 130' INT
 trap 'exit 143' TERM
 
 # No migration: schema changes must be separately reviewed and approved.
-php artisan down --retry=60
 maintenance=1
+php artisan down --retry=60
 rsync "${rsync_flags[@]}" "$source_dir/" "$target_dir/"
 php artisan config:cache
 php artisan view:cache
