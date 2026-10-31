@@ -21,7 +21,7 @@ cmp -s "$source_dir/composer.lock" "$target_dir/composer.lock" || { echo "compos
 [[ -n "${AGENTMATH_DEPLOY_APPROVED_SHA:-}" && "${AGENTMATH_DEPLOY_APPROVED_SHA}" == "$expected_sha" || "$mode" == "--dry-run" ]] || { echo "Apply requires AGENTMATH_DEPLOY_APPROVED_SHA matching expected commit" >&2; exit 1; }
 
 excludes=(
-  --exclude='/.git/' --exclude='/.github/' --exclude='/.gitignore'
+  --exclude='/.git' --exclude='/.github/' --exclude='/.gitignore'
   --exclude='/.env' --exclude='/.env.*' --exclude='/storage/'
   --exclude='/bootstrap/cache/' --exclude='/vendor'
   --exclude='/public/.htaccess' --exclude='/public/php.ini'
