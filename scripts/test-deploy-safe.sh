@@ -19,6 +19,12 @@ echo secret > "$ROOT/target/.env"
 echo persistent > "$ROOT/target/storage/keep"
 echo remove-me > "$ROOT/target/obsolete"
 git -C "$ROOT/source" add . && git -C "$ROOT/source" commit -qm test
+# A vendor symlink must not make the checkout dirty or be transferred to production.
+rm -rf "$ROOT/source/vendor"
+mkdir -p "$ROOT/shared-vendor"
+touch "$ROOT/shared-vendor/autoload.php"
+ln -s "$ROOT/shared-vendor" "$ROOT/source/vendor"
+test "$(git -C "$ROOT/source" status --porcelain)" != ""
 SHA="$(git -C "$ROOT/source" rev-parse HEAD)"
 export AGENTMATH_DEPLOY_APPROVED_SHA="$SHA"
 cat > "$ROOT/bin/crontab" <<EOF
@@ -36,6 +42,7 @@ SCRIPT="$(cd "$(dirname "$0")" && pwd)/deploy-safe.sh"
 bash "$SCRIPT" --dry-run "$ROOT/source" "$ROOT/target" "$SHA" > "$ROOT/dryrun"
 test -f "$ROOT/target/obsolete"
 test ! -e "$HOME/.agentmath-worker-paused"
+! grep -qE "(^|/)vendor" "$ROOT/dryrun"
 # Invalid approval must reject before any mutation.
 if AGENTMATH_DEPLOY_APPROVED_SHA=bad bash "$SCRIPT" --apply "$ROOT/source" "$ROOT/target" "$SHA" >/dev/null 2>&1; then exit 1; fi
 test ! -e "$HOME/.agentmath-worker-paused"
@@ -44,6 +51,8 @@ if FAIL_AT=config:cache bash "$SCRIPT" --apply "$ROOT/source" "$ROOT/target" "$S
 test -e "$HOME/.agentmath-worker-paused"
 test -f "$ROOT/target/.env"
 test -f "$ROOT/target/storage/keep"
+test -f "$ROOT/target/vendor/autoload.php"
+test ! -L "$ROOT/target/vendor"
 test ! -f "$ROOT/target/obsolete"
 # Failure state must reject retry.
 if bash "$SCRIPT" --apply "$ROOT/source" "$ROOT/target" "$SHA" >/dev/null 2>&1; then exit 1; fi
